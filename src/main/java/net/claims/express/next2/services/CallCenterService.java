@@ -1,7 +1,7 @@
 package net.claims.express.next2.services;
 
 import net.claims.express.next2.repositories.DB;
-import net.claims.express.next2.responses.NotificationSearchResponse;
+import net.claims.express.next2.security.services.responses.NotificationSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

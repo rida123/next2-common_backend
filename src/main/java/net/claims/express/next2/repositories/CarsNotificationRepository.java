@@ -1,7 +1,7 @@
 package net.claims.express.next2.repositories;
 
 import net.claims.express.next2.entities.CarsNotification;
-import net.claims.express.next2.responses.NotificationSearchResponse;
+import net.claims.express.next2.security.services.responses.NotificationSearchResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;

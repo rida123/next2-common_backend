@@ -1,6 +1,6 @@
 package net.claims.express.next2.controllers;
 
-import net.claims.express.next2.responses.NotificationSearchResponse;
+import net.claims.express.next2.security.services.responses.NotificationSearchResponse;
 import net.claims.express.next2.services.CallCenterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

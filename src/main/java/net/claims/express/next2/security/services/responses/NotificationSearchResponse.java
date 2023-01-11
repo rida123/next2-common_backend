@@ -1,4 +1,4 @@
-package net.claims.express.next2.responses;
+package net.claims.express.next2.security.services.responses;
 
 import org.springframework.beans.factory.annotation.Value;
 

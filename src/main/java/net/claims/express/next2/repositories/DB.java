@@ -9,4 +9,7 @@ public class DB {
 
 @Autowired
 public CarsNotificationRepository carsNotificationRepository;
+
+@Autowired
+public CoreUserRepository userRepository;
 }

@@ -23,8 +23,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         this.authenticationManager = (CustomAuthManager)authManager;
     }
 
-
-
     //    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
       //if no bearer in authorization header => continue filter chain

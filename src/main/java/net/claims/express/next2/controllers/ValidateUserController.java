@@ -11,20 +11,29 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+//@CrossOrigin(origins = "*")
+
 @RequestMapping("api/basicAuth")
 public class ValidateUserController {
 
     @Autowired
     JWTService jwtService;
 
-    @RequestMapping("validate")
+
+
+    //start from melhem
+
+    //end from melhem
+
+    @PostMapping("validate")
     public List<CoreProfile> userIsValid() {
         System.out.println("@Validate controller....");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

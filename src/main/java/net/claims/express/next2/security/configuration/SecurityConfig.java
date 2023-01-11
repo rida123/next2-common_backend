@@ -1,6 +1,7 @@
 package net.claims.express.next2.security.configuration;
 
 import net.claims.express.next2.security.filters.JWTAuthorizationFilter;
+import net.claims.express.next2.security.filters.UsernamePasswordFilter;
 import net.claims.express.next2.security.services.CustomAuthManager;
 import net.claims.express.next2.security.services.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.security.core.token.Sha512DigestUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -30,12 +33,19 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        var usernamePwdFilter = new UsernamePasswordFilter();
+
+        UsernamePasswordFilter up_authentication_filter = new UsernamePasswordFilter();
+        up_authentication_filter.setAuthenticationManager(this.authManager);
         //Requirements for BASIC AUTHENTICATION part
-        http.csrf().disable()
+        http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .userDetailsService(jpaUserDetailsService)
+//                .userDetailsService(jpaUserDetailsService) todo check later
                 .authorizeRequests().
-                antMatchers(HttpMethod.OPTIONS, "/api/basicAuth/**").permitAll().and().httpBasic();
+                antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers("/api/basicAuth/**").permitAll()
+                  .and().httpBasic().and().addFilterAfter(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
+//                .and().httpBasic().and().addFilterBefore(new UsernamePasswordFilter(this.authManager), BasicAuthenticationFilter.class);
         //cors configuration didn't work, solution add configuration file CORSConfig:
         /*http.cors(c -> {
             CorsConfigurationSource cs = r -> {
@@ -53,7 +63,7 @@ public class SecurityConfig {
 //               .and().build();
 
         //Requirements for JWT part
-        //commenting out jwt part: (temporarly) //
+        //commenting out jwt part: (temporary) //
         // jwt part:
         http.csrf().disable().authorizeRequests()
                 .mvcMatchers("/hello").hasAuthority("dmDataEntry") //for demo

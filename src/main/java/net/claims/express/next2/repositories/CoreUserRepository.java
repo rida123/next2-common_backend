@@ -16,4 +16,6 @@ public interface CoreUserRepository extends JpaRepository<CoreUser, String> {
     Optional<CoreUser> findCoreUserByUsername(String username);*/
 
 
+    @Query(value = " SELECT CONFIG_VALUE FROM CORE_CONFIGURATION WHERE ID = ?1 ", nativeQuery = true)
+    String findConfigByKey(String key);
 }

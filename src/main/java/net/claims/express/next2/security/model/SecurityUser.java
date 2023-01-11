@@ -83,7 +83,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.coreUser.getEncryptedPwd();
+        return coreUser.getEncryptedPwd();
     }
 
     @Override

@@ -38,7 +38,7 @@ public class JpaUserDetailsService implements  UserDetailsService {
             }
 
             foundCoureUser = optionalCoreUser.get();
-            //get company of this user:
+            //get company of this user from one of his profiles:
             if(foundCoureUser.getProfiles().size() > 0) {
                 String profileId = foundCoureUser.getProfiles().get(0).getId();
 

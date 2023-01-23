@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CallCenterService {
+public class CallCenterService  {
     @Autowired
     DB db;
 public List<NotificationSearchResponse> getNotificationSearch(String type ,String value ,String company, String admin){

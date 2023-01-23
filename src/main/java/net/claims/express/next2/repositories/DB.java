@@ -12,4 +12,8 @@ public CarsNotificationRepository carsNotificationRepository;
 
 @Autowired
 public CoreUserRepository userRepository;
+
+
+@Autowired
+public CarsErrorlogRepository errorlogRepository;
 }

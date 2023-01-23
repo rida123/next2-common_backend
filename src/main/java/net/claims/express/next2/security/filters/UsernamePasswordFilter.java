@@ -51,6 +51,7 @@ public class UsernamePasswordFilter extends OncePerRequestFilter {
             }
 
         } catch (IOException e) {
+            filterChain.doFilter(request, response);
             e.printStackTrace();
 //            throw new AuthenticationServiceException(e.getMessage(), e);
         }

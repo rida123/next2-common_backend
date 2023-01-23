@@ -42,8 +42,9 @@ public class CoreCompany extends BaseEntity implements Serializable {
     @Column(name = "ADDRESS_INFO", length = 200)
     private String addressInfo;
 
-    @OneToMany(mappedBy = "coreCompany", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    private List<CoreCompanyProfile> coreCompanyProfileList;
+    //todo: old code
+/*    @OneToMany(mappedBy = "coreCompany", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private List<CoreCompanyProfile> coreCompanyProfileList;*/
     
 
     public CoreCompany() {

@@ -33,7 +33,6 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        var usernamePwdFilter = new UsernamePasswordFilter();
 
         UsernamePasswordFilter up_authentication_filter = new UsernamePasswordFilter();
         up_authentication_filter.setAuthenticationManager(this.authManager);
@@ -44,7 +43,7 @@ public class SecurityConfig {
                 .authorizeRequests().
                 antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/basicAuth/**").permitAll()
-                  .and().httpBasic().and().addFilterAfter(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
+                  .and().addFilterAt(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
 //                .and().httpBasic().and().addFilterBefore(new UsernamePasswordFilter(this.authManager), BasicAuthenticationFilter.class);
         //cors configuration didn't work, solution add configuration file CORSConfig:
         /*http.cors(c -> {
@@ -58,17 +57,15 @@ public class SecurityConfig {
             };
         });*/
         //end cors
-        //a          .mvcMatchers(HttpMethod.OPTIONS, "/api/basicAuth/**").permitAll()
-        //a           .mvcMatchers("/api/basicAuth/validate").hasAnyAuthority("dmReception", "dmCeUsr");
-//               .and().build();
-
         //Requirements for JWT part
         //commenting out jwt part: (temporary) //
         // jwt part:
         http.csrf().disable().authorizeRequests()
-                .mvcMatchers("/hello").hasAuthority("dmDataEntry") //for demo
-                .mvcMatchers("/demo").hasAuthority("dmDataEntry_test") //for demo
+                .mvcMatchers("/hello").hasAuthority("cmPrintSubRS") //for demo
+                .mvcMatchers("/demo").hasAuthority("cmPrintSubRS") //for demo
                 .mvcMatchers("/getNotificationSearch").hasAuthority("dmSaveDataEntry") //for demo
+                ///api/error_log
+//                .mvcMatchers("/api/error_log/all").hasAuthority("cmPrintSubRS")
                 .and().addFilter(new JWTAuthorizationFilter(this.authManager));
 //         return http.build();
         return http.build();

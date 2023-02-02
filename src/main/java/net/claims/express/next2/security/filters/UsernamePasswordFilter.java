@@ -36,6 +36,9 @@ public class UsernamePasswordFilter extends OncePerRequestFilter {
         String password;
 
         try {
+            System.out.println("we are in filter to be debugged");
+            filterChain.doFilter(request, response);
+            /*
              ServletInputStream is =  request.getInputStream();
             Map<String, String> requestMap = new ObjectMapper().readValue(is, Map.class);
             username = requestMap.get("username");
@@ -49,10 +52,11 @@ public class UsernamePasswordFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication_object);
                 filterChain.doFilter(request, response);
             }
-
-        } catch (IOException e) {
+//catch (IOException e)
+        */} catch (Exception e) {
+            System.out.println("we are in filter but catch blcok: " + e.getMessage());
             filterChain.doFilter(request, response);
-            e.printStackTrace();
+//            e.printStackTrace();
 //            throw new AuthenticationServiceException(e.getMessage(), e);
         }
     }

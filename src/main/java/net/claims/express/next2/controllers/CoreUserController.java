@@ -2,6 +2,8 @@ package net.claims.express.next2.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import net.claims.express.next2.entities.*;
+import net.claims.express.next2.exceptions.BadRequestException;
+import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.security.model.SecurityAuthority;
 import net.claims.express.next2.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,11 @@ public class CoreUserController {
     @Autowired
     private CoreProfileService coreProfileService;
 
+    @Autowired
+    CoreCompanyService coreCompanyService;
+
+    @Autowired
+
  /*   @Autowired
     private CustomUserService userService;*/
 
@@ -35,6 +42,20 @@ public class CoreUserController {
         List<CoreUser> users = coreUserService.findAll();
         return users;
     }
+
+    @GetMapping("/delete/{userId}/{profileId}")
+    public ApiResponse denyProfileFromUser(@PathVariable("userId") String userId,
+                                          @PathVariable("profileId") String profileId){
+        return this.coreUserService.grantProfile(profileId, userId);
+    }
+
+    @GetMapping("/grant/{userId}/{profileId}")
+    public ApiResponse grantProfileToUser(@PathVariable("profileId") String profileId,
+                                          @PathVariable("userId") String userId){
+        return this.coreUserService.grantProfile(userId, profileId);
+    }
+
+
 
     @GetMapping("/{userId}/profiles")
     public List<CoreProfile> getProfilesPerUser(@PathVariable String userId) {
@@ -48,6 +69,11 @@ public class CoreUserController {
         }
 
         foundCoureUser = optionalCoreUser.get();
+        System.out.println("size of profiles: " + foundCoureUser.getProfiles().size());
+        System.out.println("profiles that i have:");
+        for (CoreCompanyProfile p: foundCoureUser.getProfiles()) {
+            System.out.println("code: " + p.getId());
+        }
 //        List<CoreUserProfile> registeredProfiles = this.coreUserProfileRepository.findCoreUserProfileByCoreUserId(coreUser.getId());
 
         List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getProfilesPerUser(foundCoureUser.getId());

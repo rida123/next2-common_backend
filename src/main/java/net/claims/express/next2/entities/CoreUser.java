@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,13 +40,13 @@ public class CoreUser extends BaseEntity implements Serializable {
     @Transient
     boolean back;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "core_user_profile",
             joinColumns = @JoinColumn(name = "core_user_id"),
             inverseJoinColumns = @JoinColumn(name = "core_company_profile_id")
     )
-    private List<CoreCompanyProfile> profiles;
+    private List<CoreCompanyProfile> profiles = new ArrayList<>();
 
     @Transient
     private int company_id;
@@ -53,6 +54,14 @@ public class CoreUser extends BaseEntity implements Serializable {
 //    public CoreUser() {
 //        this.id = UUID.randomUUID().toString();
 //    }
+
+    public void denyProfile(CoreCompanyProfile profile) {
+        if(this.profiles.contains(profile)) {
+            boolean done = this.profiles.remove(profile);
+            System.out.println("profile remove result: " + done);
+        }
+    }
+
 
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);

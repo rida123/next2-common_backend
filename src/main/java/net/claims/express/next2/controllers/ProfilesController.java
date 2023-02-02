@@ -3,9 +3,7 @@ package net.claims.express.next2.controllers;
 import net.claims.express.next2.entities.CoreProfile;
 import net.claims.express.next2.services.CoreProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -23,4 +21,5 @@ public class ProfilesController {
         return this.profileService.findAll();
      /*   resp.setStatus(402); */
     }
+
 }

@@ -1,5 +1,6 @@
 package net.claims.express.next2.controllers;
 
+import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.security.services.responses.NotificationSearchResponse;
 import net.claims.express.next2.services.CallCenterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,19 @@ public class CallCenterController {
 
 
     @GetMapping("/getNotificationSearch")
-    public List<NotificationSearchResponse> getNotificationSearch (@RequestParam(name = "type",required = true)String type,
-                                                                   @RequestParam(name = "cmp",required = true)String cmp,
-                                                                   @RequestParam(name = "admin", required = true)String admin,
-                                                                   @RequestParam(name = "value",required = true)String value) {
-        List<NotificationSearchResponse> notifications= callCenterService.getNotificationSearch(type,value,cmp,admin);
+    public ApiResponse getNotificationSearch (@RequestParam(name = "type",required = true)String type,
+                                                                               @RequestParam(name = "cmp",required = true)String cmp,
+                                                                               @RequestParam(name = "admin", required = true)String admin,
+                                                                               @RequestParam(name = "value",required = true)String value) {
+        ApiResponse notifications= callCenterService.getNotificationSearch(type,value,cmp,admin);
 
        return  notifications;
 
 
     }
+
+
+
+
+
 }

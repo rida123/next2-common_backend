@@ -15,8 +15,8 @@ public class ProfilesController {
     @Autowired
     private CoreProfileService profileService;
 
-    @GetMapping("/all")
-    public List<CoreProfile> getAllErrors(HttpServletResponse resp)  {
+    @GetMapping("/all") //TODO: WE MUST HAVE THE COMPANYiD AS PARAMETER
+    public List<CoreProfile> getAllProfiles(HttpServletResponse resp)  {
     //    Thread.sleep(5000);
         return this.profileService.findAll();
      /*   resp.setStatus(402); */

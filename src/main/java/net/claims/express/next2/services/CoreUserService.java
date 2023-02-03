@@ -64,7 +64,8 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
         //correct parameters(pathVariables => proceed to grant user)
         //usersInsurance in the database represents company that user works for
-        String insurance_companyId = String.valueOf(employeeInfo.getUsersInsurance());
+        String company_branch_info = employeeInfo.getUsersBranchId();
+        String insurance_companyId = String.valueOf(employeeInfo.getUsersBranchId().substring(0, company_branch_info.indexOf(".")));
         Optional<CoreCompany> optionalCoreCompany = this.companyService.findById(insurance_companyId);
 
         /*now get the CoreCompanyProfile that represents the profile we want to grant to

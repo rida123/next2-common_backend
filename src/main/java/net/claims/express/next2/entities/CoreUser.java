@@ -40,7 +40,7 @@ public class CoreUser extends BaseEntity implements Serializable {
     @Transient
     boolean back;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "core_user_profile",
             joinColumns = @JoinColumn(name = "core_user_id"),

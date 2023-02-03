@@ -2,10 +2,11 @@ package net.claims.express.next2.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import net.claims.express.next2.entities.*;
-import net.claims.express.next2.exceptions.BadRequestException;
 import net.claims.express.next2.http.response.ApiResponse;
-import net.claims.express.next2.security.model.SecurityAuthority;
-import net.claims.express.next2.services.*;
+import net.claims.express.next2.services.CoreCompanyService;
+import net.claims.express.next2.services.CoreProfileService;
+import net.claims.express.next2.services.CoreUserProfileService;
+import net.claims.express.next2.services.CoreUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +14,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/user")
 @Slf4j
-public class CoreUserController {
+public class    CoreUserController {
 
     @Autowired
     private CoreUserService coreUserService;
@@ -54,7 +58,6 @@ public class CoreUserController {
                                           @PathVariable("userId") String userId){
         return this.coreUserService.grantProfile(userId, profileId);
     }
-
 
 
     @GetMapping("/{userId}/profiles")

@@ -77,8 +77,8 @@ public interface CarsNotificationRepository  extends JpaRepository<CarsNotificat
             " WHERE  T.NOTIFICATION_ID      = N.NOTIFICATION_ID "+
             " AND  C.CAR_CLAIM_ID = T.LOSS_TOW_ID "+
             " AND  (C.CAR_DRIVER_MOBILE_PHONE LIKE '%'|| trim( ?1 )||'%' OR CAR_DRIVER_PHONE LIKE '%'||trim( ?1 )||'%' OR CAR_OWNER_MOBILE_PHONE LIKE '%'||trim( ?1 )||'%' OR N.NOTIFICATION_CONTACT_PHONE LIKE '%'||trim( ?1 )||'%') "+
-                " AND (NOTIFICATION_INSURANCE_ID=?2 OR ('1' = ?2  AND NOTIFICATION_INSURANCE_ID IN ('10','11','13','18','19','23')) OR ('1' = ?2 AND NVL(?3,'N')='Y')) "+
-                " ORDER BY N.NOTIFICATION_REPORTED_DATE DESC "
+            " AND (NOTIFICATION_INSURANCE_ID=?2 OR ('1' = ?2  AND NOTIFICATION_INSURANCE_ID IN ('10','11','13','18','19','23')) OR ('1' = ?2 AND NVL(?3,'N')='Y')) "+
+            " ORDER BY N.NOTIFICATION_REPORTED_DATE DESC "
             ,nativeQuery = true)
     List<NotificationSearchResponse> getNotificationSearchQueryByPHone(String value , String cmp,String admin);
 

@@ -188,7 +188,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
     }
 
     @Transactional
-    public ApiResponse updateRoles(String userId, String profileId, CoreProfile coreProfile) {
+    public ApiResponse updateRoles(String userId, CoreProfile coreProfile) {
         // ----Audit info: current user using the system
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -208,7 +208,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         /*now get the CoreCompanyProfile that represents the profile we want to update its roles and if its
         * not provided to the company yet, we send an error*/
 
-        CoreCompanyProfile foundCompanyProfile = this.getCompanyProfile(profileId, insurance_companyId);
+        CoreCompanyProfile foundCompanyProfile = this.getCompanyProfile(coreProfile.getId(), insurance_companyId);
 
         Optional<CoreUserProfile> optionalCoreUserProfile =
                 this.coreUserProfileService.findById(userId + foundCompanyProfile.getId());
@@ -216,10 +216,19 @@ public class CoreUserService  extends BaseService<CoreUser> {
         if(optionalCoreUserProfile.isEmpty()) {
             //We throw an exception  because user is supposed to have this profile as prerequisite in order
             // to modify his roles:
-            throw new BadRequestException("User must have " + foundCompanyProfile.getId())
+            throw new BadRequestException("User must have " + foundCompanyProfile.getId());
         } else {
-            //it means this user already has this profile and our job is to update his roles as modified in front-end app
+            //user has this profile and our job is to update his roles as modified in front-end app
+            CoreUserProfile userProfile = optionalCoreUserProfile.get();
+            Set<CoreRole> myRoles = userProfile.getUserRoles();
 
+            System.out.println("-----------------testing results roles-----------");
+            System.out.println("count of roles: " + myRoles.size());
+
+            for (CoreRole role: coreProfile.getProfileRoles()) {
+                System.out.println("role: " + role.getDescription()  + ", granted => " + role.getGranted());
+            }
+            
         }
 
         return null;

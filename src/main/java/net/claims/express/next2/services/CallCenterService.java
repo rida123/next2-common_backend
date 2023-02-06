@@ -27,8 +27,54 @@ public ApiResponse getNotificationSearch(String type ,String value ,String compa
         apiResponse.setStatusCode(StatusCode.OK.getCode());
         return apiResponse;
     }
-    else
-        return  null ;
+
+    else if (type.equalsIgnoreCase("SIMPLATE")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryBySimPlate(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+
+
+    else if (type.equalsIgnoreCase("NAME")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryByName(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+
+
+    else if (type.equalsIgnoreCase("CLAIM_NUM")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryByClaimNum(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+
+    else if (type.equalsIgnoreCase("NEWEST_TOWN")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryByNewestTow(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+    else if (type.equalsIgnoreCase("NOTIFICATION")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryByNotification(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+
+
+
+    else{
+        apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+        apiResponse.setTitle("INVALID INPUT");
+        apiResponse.setMessage("INVALID INPUT");
+        return apiResponse;
+
+
+    }
+
 }
 
 

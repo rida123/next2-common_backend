@@ -63,6 +63,19 @@ public ApiResponse getNotificationSearch(String type ,String value ,String compa
         apiResponse.setStatusCode(StatusCode.OK.getCode());
         return apiResponse;
     }
+    else if (type.equalsIgnoreCase("POLICY_NUMBER")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryByPolicyNumber(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+    else if (type.equalsIgnoreCase("NEWEST_ACCIDENT")) {
+        List<NotificationSearchResponse> notificationSearchResponseList = db.carsNotificationRepository.getNotificationSearchQueryByNewestAccident(value, company, admin);
+        apiResponse.setData(notificationSearchResponseList);
+        apiResponse.setStatusCode(StatusCode.OK.getCode());
+        return apiResponse;
+    }
+
 
 
 

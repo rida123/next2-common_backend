@@ -1,12 +1,16 @@
 package net.claims.express.next2.repositories;
 
 import net.claims.express.next2.entities.CarsNotification;
+import net.claims.express.next2.http.response.PolicySearchResponse;
 import net.claims.express.next2.security.services.responses.NotificationSearchResponse;
+import net.claims.express.next2.views.VehicleView;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @EnableJpaRepositories
@@ -352,6 +356,125 @@ public interface CarsNotificationRepository  extends JpaRepository<CarsNotificat
             " ORDER BY N.NOTIFICATION_REPORTED_DATE DESC "
             ,nativeQuery = true)
     List<NotificationSearchResponse> getNotificationSearchQueryByNewestAccident(String value , String cmp,String admin);
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND POLICY_NUMBER = ?5 AND POLICY_EFFECTIVE_DATE <= ?3 ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc , TRUNC(POLICY_EXPIRY_DATE) desc , POLICY_ISSUE_DATE desc ",
+
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewByPolicyNumber(String iInsurance , String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND POLICY_NUMBER like '%' || ?5 || '%' AND POLICY_EFFECTIVE_DATE <= ?3 ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc , TRUNC(POLICY_EXPIRY_DATE) desc , POLICY_ISSUE_DATE desc ",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewBySimilarPolicyNumber(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND PLATE_NUM = ?5 AND POLICY_EFFECTIVE_DATE <= ?3  ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc ",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewByPlateNumber(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND PLATE_NUM like '%' || ?5 || '%' AND POLICY_EFFECTIVE_DATE <= ?3  ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc ",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewBySimilarPlate(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND PLATE_NUM = regexp_replace(?5, '[^0-9]', '') and upper(regexp_replace(CAR_PLATE , '[^a-zA-Z]', '')) = upper(regexp_replace(?5 , '[^a-zA-Z]', '')) AND POLICY_EFFECTIVE_DATE <= ?3  ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewByExactPlateNumber(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND UPPER(CLIENT_NAME) like '%' || UPPER(trim(?5)) || '%' AND POLICY_EFFECTIVE_DATE <= ?3  ORDER BY POLICY_INSURANCE_ID ,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewByName(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND CAR_CHASSIS like '%' || ?5 AND POLICY_EFFECTIVE_DATE <= ?3  ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewByChassisNumber(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where (POLICY_INSURANCE_ID = ?1 OR 'ALL' = ?1)" +
+                    " AND ('SHOW_ALL' = ?2 OR POLICY_TYPE = ?2 OR ('ALL_TPL' = ?2 AND POLICY_TYPE IN ('ALL','TPL')))" +
+                    " AND POLICY_EXPIRY_DATE >= ?3 " + " AND ('ALL' = ?4 or POLICY_PRODUCTS_ID = ?4 ) " +
+                    " AND CLIENT_PHONE = ?5 AND POLICY_EFFECTIVE_DATE <= ?3  ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleViewByPhoneNumber(String iInsurance, String iPolicyType, Date iAsOfDate, String productType, String iSearchValue);
+
+
+    @Query(
+            value = "select *  from V_VEHICLE where 1=2 ORDER BY POLICY_INSURANCE_ID,POLICY_POLSERNO desc, TRUNC(POLICY_EXPIRY_DATE) desc, POLICY_ISSUE_DATE desc ",
+            nativeQuery = true)
+    List<PolicySearchResponse> getVehicleView();
+
+
+//     query.setParameter(1, iInsurance);
+//        query.setParameter(2, iInsurance);
+//        query.setParameter(3, iPolicyType);
+//        query.setParameter(4, iPolicyType);
+//        query.setParameter(5, iPolicyType);
+//        query.setParameter(6, iAsOfDate);
+//        if (!StringUtils.isEmpty(productType)) {
+//        query.setParameter(7, productType);
+//        query.setParameter(8, productType);
+//    } else {
+//        query.setParameter(7, "ALL");
+//        query.setParameter(8, "ALL");
+//    }
+//        query.setParameter(9, iSearchValue);
+//        if (iSearchBy.equals("ExactPlateNumber")) {
+//        query.setParameter(10, iSearchValue);
+//        query.setParameter(11, iAsOfDate);
+//        //            query.setParameter(12, iAsOfDate);
+//    } else {
+//        query.setParameter(10, iAsOfDate);
+
+
+
+
+
+
+
+
+
 
 
 

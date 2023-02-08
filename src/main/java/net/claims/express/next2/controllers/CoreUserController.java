@@ -2,6 +2,7 @@ package net.claims.express.next2.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import net.claims.express.next2.entities.*;
+import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.services.CoreCompanyService;
 import net.claims.express.next2.services.CoreProfileService;
@@ -9,10 +10,7 @@ import net.claims.express.next2.services.CoreUserProfileService;
 import net.claims.express.next2.services.CoreUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +40,9 @@ public class    CoreUserController {
     private CustomUserService userService;*/
 
     @GetMapping("/all")
-    public List<CoreUser> getAllUsers() {
+    public ApiResponse getAllUsers() {
         List<CoreUser> users = coreUserService.findAll();
-        return users;
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "all users.", users);
     }
 
     @GetMapping("/delete/{userId}/{profileId}")
@@ -59,6 +57,11 @@ public class    CoreUserController {
         return this.coreUserService.grantProfile(userId, profileId);
     }
 
+
+    @PostMapping("/{userId}/update-roles")
+    public ApiResponse updateUserProfileRoles(String userId, @RequestBody CoreProfile userProfile){
+        return this.coreUserService.updateRoles(userId, userProfile);
+    }
 
     @GetMapping("/{userId}/profiles")
     public List<CoreProfile> getProfilesPerUser(@PathVariable String userId) {

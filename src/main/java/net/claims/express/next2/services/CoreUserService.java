@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,9 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
     @Autowired
     private CoreUserProfileService coreUserProfileService;
+
+    @Autowired
+    private CoreUserProfilePermService coreUserProfilePermService;
     @Autowired
     private CoreCompanyRepository coreCompanyRepository;
 
@@ -98,8 +102,21 @@ public class CoreUserService  extends BaseService<CoreUser> {
         return new ApiResponse(StatusCode.OK.getCode(), "success", "profile has been created successfully.", profileToAdd);
     }
 
+    /**
+     * we get company id from user
+     * @param userId
+     * @return
+     */
+    public ApiResponse getUserCompanyProfiles(String userId) {
+        CarsInsuranceEmployee employeeInfo = this.getEmployeeInfo(userId);
+        String companyId = employeeInfo.getInsuranceEmployeeId().substring(0, employeeInfo.getInsuranceEmployeeId().indexOf("."));
+
+        List<CoreProfile> companyProfiles = this.companyProfileService.getProfilesByCompany(companyId);
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles returned successfully.", companyProfiles);
+    }
+
     @Transactional
-    private CoreUserProfile addUserProfile(String coreUserId, CoreCompanyProfile profileToAdd, String loginUser) {
+    CoreUserProfile addUserProfile(String coreUserId, CoreCompanyProfile profileToAdd, String loginUser) {
 
         String userProfileId = coreUserId + "." + profileToAdd.getId();
         CoreUserProfile coreUserProfile = new CoreUserProfile();
@@ -120,7 +137,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         //            //old work:     profile.getCoreUsers().add(user);
     }
 
-    private CarsInsuranceEmployee getEmployeeInfo(String coreUserId) {
+    public CarsInsuranceEmployee getEmployeeInfo(String coreUserId) {
         Optional<CarsInsuranceEmployee> checkEmployee = this.carsInsuranceEmployeeService.findByUsersCode(coreUserId);
         CarsInsuranceEmployee employeeInfo = checkEmployee.orElseThrow(() -> new BadRequestException("user of ID: " + coreUserId + " doesn't exist"));
         return employeeInfo;
@@ -225,13 +242,33 @@ public class CoreUserService  extends BaseService<CoreUser> {
             System.out.println("-----------------testing results roles-----------");
             System.out.println("count of roles: " + myRoles.size());
 
+            CoreUserProfilePerm perm;
             for (CoreRole role: coreProfile.getProfileRoles()) {
                 System.out.println("role: " + role.getDescription()  + ", granted => " + role.getGranted());
-            }
+                if(role.getGranted() == true) {
+                    perm = new CoreUserProfilePerm();
+                    perm.setId(userProfile.getId() + role.getId());
+                    perm.setCoreUserProfile(userProfile);
+                    perm.setCoreRole(role);
+                    String userProfile_taskFlow_perm = this.coreUserProfileService.getCoreProfTfPermId(role.getId(), userProfile.getId());
+                    perm.setCoreProfileTaskflowPerm(userProfile_taskFlow_perm);
+                    perm.setSysVersionNumber(1L);
+                    perm.setSysCreatedDate(LocalDateTime.now());
+                    perm.setSysCreatedBy(currentPrincipalName);
+                    perm.setSysUpdatedBy(currentPrincipalName);
+                    perm.setSysUpdatedDate(LocalDateTime.now());
+
+                    this.coreUserProfilePermService.save(perm);
+                }
+                else {
+                    //revoke any role that is has granted = false;
+                    this.coreUserProfilePermService.deleteById(userProfile.getId() + role.getId());
+                }
+            }//end looping through roles:
+            return new ApiResponse(StatusCode.OK.getCode(), "success", "Roles updated successfully.", coreProfile);
             
         }
 
-        return null;
     }
 
     public CoreCompanyProfile getCompanyProfile(String profileId, String companyId) {

@@ -18,5 +18,7 @@ public class CoreUserProfileService extends BaseService<CoreUserProfile> {
         return this.coreUserProfileJpaRepository.findCoreUserProfileByCoreUserId(coreUserId);
     }
 
-
+    public String getCoreProfTfPermId(String role_id, String userProfile_id) {
+        return this.coreUserProfileJpaRepository.getCoreProfTfPermId(role_id, userProfile_id);
+    }
 }

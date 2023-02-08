@@ -63,7 +63,7 @@ public class SecurityConfig {
         http.csrf().disable().authorizeRequests()
                 .mvcMatchers("/hello").hasAuthority("cmPrintSubRS") //for demo
                 .mvcMatchers("/demo").hasAuthority("cmPrintSubRS") //for demo
-                .mvcMatchers("/getNotificationSearch").hasAuthority("dmSaveDataEntry") //for demo
+               // .mvcMatchers("/getNotificationSearch").hasAuthority("dmSaveDataEntry") //for demo
                 ///api/error_log
 //                .mvcMatchers("/api/error_log/all").hasAuthority("cmPrintSubRS")
                 .and().addFilter(new JWTAuthorizationFilter(this.authManager));

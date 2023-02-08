@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum StatusCode {
 
     OK(1, "OK")
+        ,FAILED(0,"fAILED")
     ;
 
     private final int code;

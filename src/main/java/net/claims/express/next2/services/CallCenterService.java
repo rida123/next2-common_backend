@@ -5,7 +5,6 @@ import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.http.response.PolicySearchResponse;
 import net.claims.express.next2.repositories.DB;
 import net.claims.express.next2.security.services.responses.NotificationSearchResponse;
-import net.claims.express.next2.views.VehicleView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

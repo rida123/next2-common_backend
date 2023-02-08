@@ -53,7 +53,7 @@ public class    CoreUserController {
         return this.coreUserService.grantProfile(profileId, userId);
     }
 
-    @GetMapping("/grant/{userId}/{profileId}")
+@GetMapping("/grant/{userId}/{profileId}")
     public ApiResponse grantProfileToUser(@PathVariable("profileId") String profileId,
                                           @PathVariable("userId") String userId){
         return this.coreUserService.grantProfile(userId, profileId);

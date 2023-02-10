@@ -228,7 +228,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
     }
 
     @Transactional
-    public ApiResponse updateRoles(String userId, CoreProfile coreProfile) {
+    public ApiResponse updateRoles(String userId, CoreProfile profile_with_updateRoles) {
         // ----Audit info: current user using the system
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -252,7 +252,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         /*now get the CoreCompanyProfile that represents the profile we want to update its roles and if its
         * not provided to the company yet, we send an error*/
 
-        CoreCompanyProfile foundCompanyProfile = this.getCompanyProfile(coreProfile.getId(), insurance_companyId);
+        CoreCompanyProfile foundCompanyProfile = this.getCompanyProfile(profile_with_updateRoles.getId(), insurance_companyId);
 
         Optional<CoreUserProfile> optionalCoreUserProfile =
                 this.coreUserProfileService.findById(userId + "." + foundCompanyProfile.getId());
@@ -264,28 +264,29 @@ public class CoreUserService  extends BaseService<CoreUser> {
         } else {
             //user has this profile and our job is to update his roles as modified in front-end app
             CoreUserProfile userProfile = optionalCoreUserProfile.get();
-            Set<CoreRole> myRoles = userProfile.getUserRoles();
+            Set<CoreRole> userProfileRoles = userProfile.getUserRoles();
 
-            System.out.println("-----------------testing results roles-----------");
-            System.out.println("count of roles: " + myRoles.size());
+            System.out.println("-------------testing results roles-----------");
+            System.out.println("count of roles: " + userProfileRoles.size());
 
             CoreUserProfilePerm perm;
-            for (CoreRole role: coreProfile.getProfileRoles()) {
+            for (CoreRole role: profile_with_updateRoles.getProfileRoles()) {
                 System.out.println("role: " + role.getDescription()  + ", granted => " + role.getGranted());
-                if(role.getGranted() == true) {
-                    perm = new CoreUserProfilePerm();
-                    perm.setId(userProfile.getId() + "." + role.getId());
-                    perm.setCoreUserProfile(userProfile);
-                    perm.setCoreRole(role);
-                    String userProfile_taskFlow_perm = this.coreUserProfileService.getCoreProfTfPermId(role.getId(), userProfile.getId());
-                    perm.setCoreProfileTaskflowPerm(userProfile_taskFlow_perm);
-                    perm.setSysVersionNumber(1L);
-                    perm.setSysCreatedDate(LocalDateTime.now());
-                    perm.setSysCreatedBy(currentPrincipalName);
-                    perm.setSysUpdatedBy(currentPrincipalName);
-                    perm.setSysUpdatedDate(LocalDateTime.now());
-
-                    this.coreUserProfilePermService.save(perm);
+                if(role.getGranted() == true) { //if granted = true and not already found in core_user_profile_perm tbl
+                    if(!this.coreUserProfilePermService.existById(userProfile.getId() + "." +  role.getId())) {
+                        perm = new CoreUserProfilePerm();
+                        perm.setId(userProfile.getId() + "." + role.getId());
+                        perm.setCoreUserProfile(userProfile);
+                        perm.setCoreRole(role);
+                        String userProfile_taskFlow_perm = this.coreUserProfileService.getCoreProfTfPermId(role.getId(), userProfile.getId());
+                        perm.setCoreProfileTaskflowPerm(userProfile_taskFlow_perm);
+                        perm.setSysVersionNumber(1L);
+                        perm.setSysCreatedDate(LocalDateTime.now());
+                        perm.setSysCreatedBy(currentPrincipalName);
+                        perm.setSysUpdatedBy(currentPrincipalName);
+                        perm.setSysUpdatedDate(LocalDateTime.now());
+                        this.coreUserProfilePermService.save(perm);
+                    }
                 }
                 else {
                     //revoke any role that is has granted = false;

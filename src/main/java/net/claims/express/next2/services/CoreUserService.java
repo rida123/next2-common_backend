@@ -217,7 +217,11 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
         //correct parameters(pathVariables => proceed to grant user)
         //usersInsurance in the database represents company that user works for
-        String insurance_companyId = String.valueOf(employeeInfo.getUsersInsurance());
+
+
+        String insuranceEmpId = employeeInfo.getInsuranceEmployeeId();
+        String insurance_companyId = insuranceEmpId.substring(0, insuranceEmpId.indexOf("."));
+
 
         Optional<CoreCompany> optionalCoreCompany = this.companyService.findById(insurance_companyId);
 
@@ -228,7 +232,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         CoreCompanyProfile foundCompanyProfile = this.getCompanyProfile(coreProfile.getId(), insurance_companyId);
 
         Optional<CoreUserProfile> optionalCoreUserProfile =
-                this.coreUserProfileService.findById(userId + foundCompanyProfile.getId());
+                this.coreUserProfileService.findById(userId + "." + foundCompanyProfile.getId());
 
         if(optionalCoreUserProfile.isEmpty()) {
             //We throw an exception  because user is supposed to have this profile as prerequisite in order
@@ -247,7 +251,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
                 System.out.println("role: " + role.getDescription()  + ", granted => " + role.getGranted());
                 if(role.getGranted() == true) {
                     perm = new CoreUserProfilePerm();
-                    perm.setId(userProfile.getId() + role.getId());
+                    perm.setId(userProfile.getId() + "." + role.getId());
                     perm.setCoreUserProfile(userProfile);
                     perm.setCoreRole(role);
                     String userProfile_taskFlow_perm = this.coreUserProfileService.getCoreProfTfPermId(role.getId(), userProfile.getId());

@@ -59,7 +59,8 @@ public class    CoreUserController {
 
 
     @PostMapping("/{userId}/update-roles")
-    public ApiResponse updateUserProfileRoles(String userId, @RequestBody CoreProfile userProfile){
+    public ApiResponse updateUserProfileRoles(@PathVariable String userId, @RequestBody CoreProfile userProfile){
+        System.out.println("we are in update roles");
         return this.coreUserService.updateRoles(userId, userProfile);
     }
 

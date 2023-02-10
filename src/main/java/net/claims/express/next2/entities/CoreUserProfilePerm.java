@@ -56,7 +56,7 @@ public class CoreUserProfilePerm extends BaseEntity implements Serializable {
     @JoinColumn(name = "CORE_USR_PRF_TSK_PRM_ID")
     private CoreProfileTaskflowPerm coreProfileTaskflowPerm;*/
 
-    //todo: wet set it as a string becase we want are not concerned with adf
+    //todo: wet set it as a string becase we are not concerned with adf
     @Column(name = "CORE_TASKFLOW_PERM_ID")
     private String coreProfileTaskflowPerm;
      

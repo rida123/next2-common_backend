@@ -14,7 +14,7 @@ public class CoreUserProfileService extends BaseService<CoreUserProfile> {
     @Autowired
     CoreUserProfileJpaRepository coreUserProfileJpaRepository;
 
-    public List<CoreUserProfile> getProfilesPerUser(String coreUserId) {
+    public List<CoreUserProfile> getUserProfiles(String coreUserId) {
         return this.coreUserProfileJpaRepository.findCoreUserProfileByCoreUserId(coreUserId);
     }
 

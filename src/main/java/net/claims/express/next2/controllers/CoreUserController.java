@@ -38,7 +38,10 @@ public class    CoreUserController {
 
  /*   @Autowired
     private CustomUserService userService;*/
-
+/**
+ * get all users
+ * todo: ask jean if we want to return users for a certain company => pass companyId
+ */
     @GetMapping("/all")
     public ApiResponse getAllUsers() {
         List<CoreUser> users = coreUserService.findAll();
@@ -48,7 +51,7 @@ public class    CoreUserController {
     @GetMapping("/delete/{userId}/{profileId}")
     public ApiResponse denyProfileFromUser(@PathVariable("userId") String userId,
                                           @PathVariable("profileId") String profileId){
-        return this.coreUserService.grantProfile(profileId, userId);
+        return this.coreUserService.revokeProfile(userId, profileId);
     }
 
     @GetMapping("/grant/{userId}/{profileId}")
@@ -59,64 +62,13 @@ public class    CoreUserController {
 
 
     @PostMapping("/{userId}/update-roles")
-    public ApiResponse updateUserProfileRoles(String userId, @RequestBody CoreProfile userProfile){
+    public ApiResponse updateUserProfileRoles(@PathVariable String userId, @RequestBody CoreProfile userProfile){
         return this.coreUserService.updateRoles(userId, userProfile);
     }
 
     @GetMapping("/{userId}/profiles")
-    public List<CoreProfile> getProfilesPerUser(@PathVariable String userId) {
-
-        CoreUser foundCoureUser;
-        Optional<CoreUser> optionalCoreUser = this.coreUserService.findById(userId);
-
-        if (!optionalCoreUser.isPresent()) {
-            log.error("User not found in the database");
-            throw new UsernameNotFoundException("User not found in the database");
-        }
-
-        foundCoureUser = optionalCoreUser.get();
-        System.out.println("size of profiles: " + foundCoureUser.getProfiles().size());
-        System.out.println("profiles that i have:");
-        for (CoreCompanyProfile p: foundCoureUser.getProfiles()) {
-            System.out.println("code: " + p.getId());
-        }
-//        List<CoreUserProfile> registeredProfiles = this.coreUserProfileRepository.findCoreUserProfileByCoreUserId(coreUser.getId());
-
-        List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getProfilesPerUser(foundCoureUser.getId());
-
-        List<CoreProfile> myCoreProfiles = new ArrayList<>();
-
-        for (CoreUserProfile core_user_profile : registeredProfiles) {
-            String coreCompanyProfileId = core_user_profile.getCoreCompanyProfileId();
-            //now fetch profile_id:
-            String coreProfileId = (coreCompanyProfileId.substring(coreCompanyProfileId.indexOf(".") + 1));
-            //now fetch CoreProfile object consisting of all roles for this profile part of these roles
-            // are granted to the user and others not granted yet
-            Optional<CoreProfile> optionalCoreProfile = this.coreProfileService.findById(coreProfileId);
-
-            if (!optionalCoreProfile.isPresent()) {
-                log.error("User not found in the database");
-                throw new UsernameNotFoundException("User not found in the database");
-            }
-
-            CoreProfile coreProfile = optionalCoreProfile.get();
-
-            Set<CoreRole> allRolesPerProfile = coreProfile.getProfileRoles();
-
-
-            for (CoreRole granted_role : core_user_profile.getUserRoles()) {
-                for (CoreRole role : allRolesPerProfile) {
-                    if (granted_role.equals(role)) {
-                        role.setGranted(true);
-                        break;
-                    }
-                }
-            }
-
-            coreProfile.setRoles(allRolesPerProfile);
-            myCoreProfiles.add(coreProfile);
-        }
-        System.out.println("end looping through map");
-        return myCoreProfiles;
-    }
+    public ApiResponse getProfilesPerUser(@PathVariable String userId) {
+        List<CoreProfile> userProfiles =  this.coreUserService.getProfilesPerUser(userId);
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "Profiles by user returned successfully.", userProfiles);
+    }//old return type: List<CoreProfile>
 }

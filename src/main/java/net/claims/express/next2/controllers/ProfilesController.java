@@ -29,7 +29,7 @@ public class ProfilesController {
      /*   resp.setStatus(402); */
     }
 
-    @GetMapping("/{userId}/all-profiles")
+    @GetMapping("/{userId}")
     public ApiResponse getAllProfilesForCompany(@PathVariable("userId") String userId) {
         CoreUser user = this.coreUserService.getCoreUser(userId);
       return this.coreUserService.getUserCompanyProfiles(user.getId());

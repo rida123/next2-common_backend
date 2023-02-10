@@ -23,6 +23,10 @@ public abstract class BaseService<T> {
 		return baseRepository.save(entity);
 	}
 
+	public boolean existById(String id) {
+		return baseRepository.existsById(id);
+	}
+
 	public T saveAndFlush(T entity) {
 		return baseRepository.saveAndFlush(entity);
 	}

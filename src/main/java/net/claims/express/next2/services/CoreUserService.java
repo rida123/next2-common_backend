@@ -289,7 +289,9 @@ public class CoreUserService  extends BaseService<CoreUser> {
                 }
                 else {
                     //revoke any role that is has granted = false;
-                    this.coreUserProfilePermService.deleteById(userProfile.getId() + role.getId());
+                    if(this.coreUserProfilePermService.existById(userProfile.getId() + "." +  role.getId())) {
+                        this.coreUserProfilePermService.deleteById(userProfile.getId() + "." +  role.getId());
+                    }
                 }
             }//end looping through roles:
             return new ApiResponse(StatusCode.OK.getCode(), "success", "Roles updated successfully.", this.getProfilesPerUser(userId));

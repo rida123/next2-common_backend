@@ -23,6 +23,10 @@ public abstract class BaseService<T> {
 		return baseRepository.save(entity);
 	}
 
+	public T saveAndFlush(T entity) {
+		return baseRepository.saveAndFlush(entity);
+	}
+
 	public <T> List<T> findAll() {
 		return (List<T>) baseRepository.findAll();
 	}

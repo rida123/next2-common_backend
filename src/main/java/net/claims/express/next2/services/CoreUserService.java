@@ -10,16 +10,15 @@ import net.claims.express.next2.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CoreUserService  extends BaseService<CoreUser> {
@@ -60,13 +59,10 @@ public class CoreUserService  extends BaseService<CoreUser> {
         //1-if coreUserId is wrong => getEmployeeInfo will throw an exception
         CarsInsuranceEmployee employeeInfo = getEmployeeInfo(coreUserId);
         //2- if profileId is wrong => throw exception
+        CoreProfile checkProfile = this.getCoreProfile(profileId);
 
-        Optional<CoreProfile> checkProfile = this.profileService.findById(profileId);
-        if (checkProfile.isEmpty()) {
-            throw new BadRequestException("No profile with id: " + profileId + " exists");
-        }
 
-        //correct parameters(pathVariables => proceed to grant user)
+        //now: correct parameters({pathVariables} => proceed to grant user)
         //usersInsurance in the database represents company that user works for
         String company_branch_info = employeeInfo.getUsersBranchId();
         String insurance_companyId = String.valueOf(employeeInfo.getUsersBranchId().substring(0, company_branch_info.indexOf(".")));
@@ -80,26 +76,20 @@ public class CoreUserService  extends BaseService<CoreUser> {
             throw new NotFoundException("Company " + optionalCoreCompany.get().getName() + " has not been granted " + profileId + " yet.");
         }
         //1- get this user profiles, if profileToAdd is not here => add
-        Optional<CoreUser> optionalCoreUser = this.coreUserRepository.findById(coreUserId);
-
-
-        CoreUser user = optionalCoreUser.get(); //exception handling is done in upper part: optionalEmployee
+        CoreUser user = this.getCoreUser(coreUserId);
         //exception handling is done in upper part: checkProfile
         CoreCompanyProfile profileToAdd = optionalFoundProfile.get();
 
         List<CoreCompanyProfile> original_companyProfiles = user.getProfiles();
 
-        //testing:
-        /*for (CoreCompanyProfile p: original_companyProfiles) {
-            System.out.println("company profile id: " + p.getId());
-        }*/
-        //end testing
         if (!original_companyProfiles.contains(profileToAdd)) {
             CoreUserProfile addedUserProfile = addUserProfile(coreUserId, profileToAdd, currentPrincipalName);
         } else {
             throw new DuplicateRequestException("profile: " + profileToAdd.getCoreProfile().getName() + " already exist");
         }
-        return new ApiResponse(StatusCode.OK.getCode(), "success", "profile has been created successfully.", profileToAdd);
+        //return updated list of CoreProfiles for user after new profile grant:
+        List<CoreProfile> updatedProfiles = this.getProfilesPerUser(coreUserId);
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "profile has been created successfully.", updatedProfiles);
     }
 
     /**
@@ -131,7 +121,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         coreUserProfile.setSysUpdatedDate(LocalDateTime.now());
         coreUserProfile.setSysUpdatedBy(loginUser);
 
-       return this.coreUserProfileService.save(coreUserProfile);
+       return this.coreUserProfileService.saveAndFlush(coreUserProfile);
         //todo: NOTE:    //save is done manually because fields like id in coreUserProfile is dynamically generated
         //            //old work: boolean result = user.getProfiles().add(profile);
         //            //old work:     profile.getCoreUsers().add(user);
@@ -143,7 +133,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         return employeeInfo;
     }
     @Transactional
-    public ApiResponse denyProfile(String userId, String profileId) {
+    public ApiResponse revokeProfile(String userId, String profileId) {
         CoreUser user = this.getCoreUser(userId);
         Optional<CoreProfile> checkProfile = this.profileService.findById(profileId);
         if (checkProfile.isEmpty()) {
@@ -157,24 +147,8 @@ public class CoreUserService  extends BaseService<CoreUser> {
         String insurance_companyId = String.valueOf(employeeInfo.getUsersInsurance());
         Optional<CoreCompany> optionalCoreCompany = this.companyService.findById(insurance_companyId);
 
-        /*now get the CoreCompanyProfile that represents the profile we want to grant to
-        the user using the insurance_companyId and core_profile id*/
-
-        Optional<CoreCompanyProfile> optionalFoundProfile = this.companyProfileService.findByCoreProfileAndCoreCompany(profileId, insurance_companyId);
-        if (optionalFoundProfile.isEmpty()) {
-            throw new NotFoundException("Company " + optionalCoreCompany.get().getName() + " has not been granted " + profileId + " yet.");
-        }
-
-        //end
-        //start
-
-        //1- get this user profiles, if profileToAdd is not here => add
-        Optional<CoreUser> optionalCoreUser = this.coreUserRepository.findById(userId);
-
-
-        CoreUser core_user = optionalCoreUser.get(); //exception handling is done in helper method:getEmployeeInfo()
-        //exception handling is done in upper part: checkProfile
-        CoreCompanyProfile profileToRemove = optionalFoundProfile.get();
+        CoreUser core_user = this.getCoreUser(userId);
+        CoreCompanyProfile profileToRemove = this.getCompanyProfile(profileId, insurance_companyId);
 
         List<CoreCompanyProfile> original_companyProfiles = core_user.getProfiles();
 
@@ -189,7 +163,56 @@ public class CoreUserService  extends BaseService<CoreUser> {
             throw new NotFoundException("profile: " + profileToRemove.getCoreProfile().getName() + " user doen't have this profile to remove");
         }
 
-        return new ApiResponse(StatusCode.OK.getCode(), "success", "profile has been removed successfully.", null);
+        //now get list of profiles for this user after revoking certain profile
+        List<CoreProfile> remainingProfiles = this.getProfilesPerUser(userId);
+
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "profile has been removed successfully.", remainingProfiles);
+    }
+
+    /**
+     * get all profiles that a user is enrolled in
+     * @param userId
+     * @return
+     */
+    public List<CoreProfile> getProfilesPerUser(String userId) {
+
+        CoreUser foundCoureUser = this.getCoreUser(userId);
+
+        /*testing:
+        System.out.println("profiles that i have:");
+        for (CoreCompanyProfile p: foundCoureUser.getProfiles()) {
+            System.out.println("code: " + p.getId());
+        }*/
+        List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getUserProfiles(foundCoureUser.getId());
+
+        List<CoreProfile> myCoreProfiles = new ArrayList<>();
+
+        for (CoreUserProfile core_user_profile : registeredProfiles) {
+            String coreCompanyProfileId = core_user_profile.getCoreCompanyProfileId();
+            //now fetch profile_id:
+            String coreProfileId = (coreCompanyProfileId.substring(coreCompanyProfileId.indexOf(".") + 1));
+            //now fetch CoreProfile object consisting of all roles for this profile part of these roles
+            // are granted to the user and others not granted yet
+            CoreProfile coreProfile = this.getCoreProfile(coreProfileId);
+
+            Set<CoreRole> allRolesPerProfile = coreProfile.getProfileRoles();
+
+            if(core_user_profile.getUserRoles() != null) {
+                for (CoreRole granted_role : core_user_profile.getUserRoles()) {
+                    for (CoreRole role : allRolesPerProfile) {
+                        if (granted_role.equals(role)) {
+                            role.setGranted(true);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            coreProfile.setRoles(allRolesPerProfile);
+            myCoreProfiles.add(coreProfile);
+        }
+        System.out.println("end looping through map");
+        return myCoreProfiles;
     }
 
     public CoreUser getCoreUser(String coreUserId) {
@@ -269,7 +292,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
                     this.coreUserProfilePermService.deleteById(userProfile.getId() + role.getId());
                 }
             }//end looping through roles:
-            return new ApiResponse(StatusCode.OK.getCode(), "success", "Roles updated successfully.", coreProfile);
+            return new ApiResponse(StatusCode.OK.getCode(), "success", "Roles updated successfully.", this.getProfilesPerUser(userId));
             
         }
 

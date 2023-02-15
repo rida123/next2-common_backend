@@ -33,8 +33,8 @@ public class ValidateUserController {
 
     //end from melhem
 
-    @PostMapping("validate")
-    public List<CoreProfile> userIsValid() {
+    @RequestMapping("validate")
+    public String userIsValid() {
         System.out.println("@Validate controller....");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("coming user::"   + auth.getPrincipal());
@@ -55,8 +55,6 @@ public class ValidateUserController {
 
         //preparing EMPTY array list to hold profiles that I can use within my company
         List<CoreProfile> myProfiles = new ArrayList<>();
-
-
 
         for(CoreCompanyProfile companyProfile: myCompanyProfiles) {
             System.out.println("@PROFILE => " + companyProfile.getId());
@@ -90,9 +88,9 @@ public class ValidateUserController {
         Map<String, String> results = new HashMap<>();
         results.put("results", token);
 
-        return myProfiles;
+//        return myProfiles;
 //        return results;
-//        return "{\"result\": \"ok\", \"name\": \"ok\"}";
+        return "{\"result\": \"ok\", \"name\": \"ok\"}";
     }
 
     @RequestMapping("ok")

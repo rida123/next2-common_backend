@@ -34,16 +34,20 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+    /*  rs: 15-2-23 basicAuth(old way it was custom filter having bugs)
         UsernamePasswordFilter up_authentication_filter = new UsernamePasswordFilter();
-        up_authentication_filter.setAuthenticationManager(this.authManager);
+        up_authentication_filter.setAuthenticationManager(this.authManager);*/
+
         //Requirements for BASIC AUTHENTICATION part
         http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .userDetailsService(jpaUserDetailsService) todo check later
+                .httpBasic().and()  //rs: 15-2-23(added)
+//                .authenticationManager(authManager)
+                .userDetailsService(jpaUserDetailsService) //rs: 15-2-23(it was commented out)
                 .authorizeRequests().
-                antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/api/basicAuth/**").permitAll()
-                  .and().addFilterAt(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
+                antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                .antMatchers("/api/basicAuth/**").permitAll();
+//                  .and().addFilterAt(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
 //                .and().httpBasic().and().addFilterBefore(new UsernamePasswordFilter(this.authManager), BasicAuthenticationFilter.class);
         //cors configuration didn't work, solution add configuration file CORSConfig:
         /*http.cors(c -> {
@@ -60,13 +64,13 @@ public class SecurityConfig {
         //Requirements for JWT part
         //commenting out jwt part: (temporary) //
         // jwt part:
-        http.csrf().disable().authorizeRequests()
+     /*   http.csrf().disable().authorizeRequests()
                 .mvcMatchers("/hello").hasAuthority("cmPrintSubRS") //for demo
                 .mvcMatchers("/demo").hasAuthority("cmPrintSubRS") //for demo
                // .mvcMatchers("/getNotificationSearch").hasAuthority("dmSaveDataEntry") //for demo
                 ///api/error_log
 //                .mvcMatchers("/api/error_log/all").hasAuthority("cmPrintSubRS")
-                .and().addFilter(new JWTAuthorizationFilter(this.authManager));
+                .and().addFilter(new JWTAuthorizationFilter(this.authManager));*/
 //         return http.build();
         return http.build();
     }

@@ -18,7 +18,7 @@ public interface CoreUserProfileJpaRepository extends BaseRepository<CoreUserPro
             " CORE_PROFILE prof ,  CORE_TASKFLOW_PERM tfPerm , CORE_PROFILE_TASKFLOW_PERM pTfPerm " +
             " where uProf.ID = ?2 and  uProf.CORE_COMPANY_PROFILE_ID = cProf.ID and " +
             " cProf.CORE_PROFILE_ID = prof.ID and prof.CORE_TASKFLOW_ID = tfPerm.CORE_TASKFLOW_ID " +
-            " and tfPerm.PERMISSION_VERB = ?1  and tfPerm.ID = pTfPerm.CORE_TASKFLOW_PERM_ID) ",
+            " and tfPerm.PERMISSION_VERB = ?1  and tfPerm.ID = pTfPerm.CORE_TASKFLOW_PERM_ID ",
             nativeQuery = true)
     String getCoreProfTfPermId(String role , String userProf);
 }

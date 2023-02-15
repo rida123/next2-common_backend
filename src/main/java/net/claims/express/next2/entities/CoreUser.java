@@ -61,10 +61,8 @@ public class CoreUser extends BaseEntity implements Serializable {
             System.out.println("profile remove result: " + done);
         }
     }
-
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+ public String toString() {
+        return getId().toString();
     }
 
 }

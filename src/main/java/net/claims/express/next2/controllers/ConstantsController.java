@@ -110,7 +110,15 @@ private ApiResponse getPolicyType (){
 private ApiResponse  getInsuranceCompany (){
 	ApiResponse  response= constantService.getInsuranceCompany();
 	return   response ;
+
+
+
 }
+	@GetMapping("/getLanguages")
+	private ApiResponse  getLanguages (){
+		ApiResponse  response= constantService.getLanguages();
+		return   response ;
+	}
 
 
 

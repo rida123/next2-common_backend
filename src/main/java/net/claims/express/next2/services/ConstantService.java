@@ -1,7 +1,9 @@
 package net.claims.express.next2.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.claims.express.next2.entities.*;
 import net.claims.express.next2.http.StatusCode;
@@ -272,4 +274,16 @@ apiResponse.setStatusCode(StatusCode.OK.getCode());
 		return  apiResponse;
 	}
 
+	public ApiResponse getLanguages() {
+		ApiResponse apiResponse = new ApiResponse();
+		Set<String> languages = new HashSet<>();
+		List<CoreResourceBundle> coreResourceBundleList= db.coreResourceBundleRepository.findAll();
+
+coreResourceBundleList.forEach(coreResourceBundle -> {
+	languages.add(coreResourceBundle.getLocale());
+});
+		apiResponse.setStatusCode(StatusCode.OK.getCode());
+		apiResponse.setData(languages);
+		return  apiResponse;
+	}
 }

@@ -276,11 +276,32 @@ apiResponse.setStatusCode(StatusCode.OK.getCode());
 
 	public ApiResponse getLanguages() {
 		ApiResponse apiResponse = new ApiResponse();
-		Set<String> languages = new HashSet<>();
+		Set<DecoLocalization> languages = new HashSet<>();
 		List<CoreResourceBundle> coreResourceBundleList= db.coreResourceBundleRepository.findAll();
 
 coreResourceBundleList.forEach(coreResourceBundle -> {
-	languages.add(coreResourceBundle.getLocale());
+	DecoLocalization decoLocalization = new DecoLocalization();
+	if(coreResourceBundle.getLocale().equals("en")){
+		decoLocalization.setValue("English");
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	else if(coreResourceBundle.getLocale().equals("fr")){
+		decoLocalization.setValue("French");
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	else if(coreResourceBundle.getLocale().equals("ar")){
+		decoLocalization.setValue("Arabic");
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	else{
+		decoLocalization.setValue(coreResourceBundle.getLocale());
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	languages.add(decoLocalization);
 });
 		apiResponse.setStatusCode(StatusCode.OK.getCode());
 		apiResponse.setData(languages);

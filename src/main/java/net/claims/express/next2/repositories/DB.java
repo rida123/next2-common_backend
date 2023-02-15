@@ -45,4 +45,6 @@ public class DB {
 
     @Autowired
     public CompanyRepository companyRepository;
+    @Autowired
+    public CoreResourceBundleRepository coreResourceBundleRepository;
 }

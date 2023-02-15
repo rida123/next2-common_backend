@@ -43,6 +43,23 @@ private ApiResponse getCarTrademarkList (@RequestParam(name="carBrandId") String
 	return response;
 }
 
+
+	@GetMapping("/getLabelByLocal")
+	private ApiResponse getLabelByLocal (@RequestParam(name="local") String local){
+		ApiResponse  response= constantService.getLocalLanguage(local);
+
+		return response;
+	}
+
+
+
+
+
+
+
+
+
+
 @GetMapping("/getDoors")
 private ApiResponse getDoors (){
 	ApiResponse  response= constantService.getDoors();

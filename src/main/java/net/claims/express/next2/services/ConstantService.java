@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.claims.express.next2.entities.*;
+import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.response.*;
 import net.claims.express.next2.repositories.DB;
 import net.claims.express.next2.views.*;
@@ -250,6 +251,25 @@ public class ConstantService {
 		insuranceCompanyListResponse.setInsuranceCompanyResponseList(companyResponses);
 		apiResponse.setData(insuranceCompanyListResponse);
 		return apiResponse;
+	}
+
+
+
+	public  ApiResponse getLocalLanguage(String local){
+		ApiResponse apiResponse = new ApiResponse();
+		Localization localization = new Localization();
+List<DecoLocalization> decoLocalizationList = new ArrayList<>();
+List<CoreResourceBundle> coreResourceBundleList= db.coreResourceBundleRepository.findByLocale(local);
+coreResourceBundleList.forEach(coreResourceBundle -> {
+	DecoLocalization decoLocalization = new DecoLocalization();
+decoLocalization.setKey(coreResourceBundle.getResourceKey());
+decoLocalizationList.add(decoLocalization);
+
+});
+localization.setDecoLocalizationList(decoLocalizationList);
+apiResponse.setData(localization);
+apiResponse.setStatusCode(StatusCode.OK.getCode());
+		return  apiResponse;
 	}
 
 }

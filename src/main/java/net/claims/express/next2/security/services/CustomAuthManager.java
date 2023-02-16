@@ -7,6 +7,7 @@ import net.claims.express.next2.security.providers.UsernamePwdProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,8 @@ public class CustomAuthManager implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        if(authentication.getClass().equals(UsernamePasswordAuthentication.class)){
+        System.out.println("type of " + authentication.getClass());
+        if(authentication.getClass().equals(UsernamePasswordAuthenticationToken.class)){
             System.out.println("authentication object type is: UsernamePasswordAuthentication");
             return this.usernamePwdAuthProvider.authenticate(authentication);
         }

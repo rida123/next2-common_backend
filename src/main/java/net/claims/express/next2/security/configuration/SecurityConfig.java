@@ -33,22 +33,22 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        var usernamePwdFilter = new UsernamePasswordFilter();
 
-    /*  rs: 15-2-23 basicAuth(old way it was custom filter having bugs)
+       /*  rs: 15-2-23 basicAuth(old way it was custom filter having bugs)
         UsernamePasswordFilter up_authentication_filter = new UsernamePasswordFilter();
         up_authentication_filter.setAuthenticationManager(this.authManager);*/
 
         //Requirements for BASIC AUTHENTICATION part
         http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .httpBasic().and()  //rs: 15-2-23(added)
-//                .authenticationManager(authManager)
-                .userDetailsService(jpaUserDetailsService) //rs: 15-2-23(it was commented out)
+                .httpBasic().and() //rs: 15-2-23(added)
+                .authenticationManager(authManager)
+//                .userDetailsService(jpaUserDetailsService) todo check later
                 .authorizeRequests().
-                antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/basicAuth/**").permitAll();
-//                  .and().addFilterAt(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
-//                .and().httpBasic().and().addFilterBefore(new UsernamePasswordFilter(this.authManager), BasicAuthenticationFilter.class);
+//     rs: 15-2-23:::.and().httpBasic().and().addFilterAfter(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
         //cors configuration didn't work, solution add configuration file CORSConfig:
         /*http.cors(c -> {
             CorsConfigurationSource cs = r -> {
@@ -61,16 +61,18 @@ public class SecurityConfig {
             };
         });*/
         //end cors
+        //a          .mvcMatchers(HttpMethod.OPTIONS, "/api/basicAuth/**").permitAll()
+        //a           .mvcMatchers("/api/basicAuth/validate").hasAnyAuthority("dmReception", "dmCeUsr");
+//               .and().build();
+
         //Requirements for JWT part
         //commenting out jwt part: (temporary) //
         // jwt part:
-     /*   http.csrf().disable().authorizeRequests()
-                .mvcMatchers("/hello").hasAuthority("cmPrintSubRS") //for demo
-                .mvcMatchers("/demo").hasAuthority("cmPrintSubRS") //for demo
-               // .mvcMatchers("/getNotificationSearch").hasAuthority("dmSaveDataEntry") //for demo
-                ///api/error_log
-//                .mvcMatchers("/api/error_log/all").hasAuthority("cmPrintSubRS")
-                .and().addFilter(new JWTAuthorizationFilter(this.authManager));*/
+        http.csrf().disable().authorizeRequests()
+                .mvcMatchers("/hello").hasAuthority("dmDataEntry") //for demo
+                .mvcMatchers("/demo").hasAuthority("dmDataEntry_test") //for demo
+                .mvcMatchers("/getNotificationSearch").hasAuthority("dmSaveDataEntry") //for demo
+                .and().addFilter(new JWTAuthorizationFilter(this.authManager));
 //         return http.build();
         return http.build();
     }

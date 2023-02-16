@@ -1,9 +1,9 @@
 package net.claims.express.next2.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import net.claims.express.next2.entities.*;
+import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.response.*;
 import net.claims.express.next2.repositories.DB;
 import net.claims.express.next2.views.*;
@@ -252,4 +252,58 @@ public class ConstantService {
 		return apiResponse;
 	}
 
+
+
+	public  ApiResponse getLocalLanguage(String local){
+		ApiResponse apiResponse = new ApiResponse();
+		Localization localization = new Localization();
+List<DecoLocalization> decoLocalizationList = new ArrayList<>();
+List<CoreResourceBundle> coreResourceBundleList= db.coreResourceBundleRepository.findByLocale(local);
+		Map<String, String >  deco = new HashMap<>();
+coreResourceBundleList.forEach(coreResourceBundle -> {
+	deco.put(coreResourceBundle.getResourceKey(),coreResourceBundle.getResourceValue());
+//	DecoLocalization decoLocalization = new DecoLocalization();
+//decoLocalization.setKey(coreResourceBundle.getResourceKey());
+//decoLocalizationList.add(decoLocalization);
+
+});
+//localization.setDecoLocalizationList(decoLocalizationList);
+apiResponse.setData(deco);
+apiResponse.setStatusCode(StatusCode.OK.getCode());
+		return  apiResponse;
+	}
+
+	public ApiResponse getLanguages() {
+		ApiResponse apiResponse = new ApiResponse();
+		Set<DecoLocalization> languages = new HashSet<>();
+		List<CoreResourceBundle> coreResourceBundleList= db.coreResourceBundleRepository.findAll();
+
+coreResourceBundleList.forEach(coreResourceBundle -> {
+	DecoLocalization decoLocalization = new DecoLocalization();
+	if(coreResourceBundle.getLocale().equals("en")){
+		decoLocalization.setValue("English");
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	else if(coreResourceBundle.getLocale().equals("fr")){
+		decoLocalization.setValue("French");
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	else if(coreResourceBundle.getLocale().equals("ar")){
+		decoLocalization.setValue("Arabic");
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	else{
+		decoLocalization.setValue(coreResourceBundle.getLocale());
+		decoLocalization.setKey(coreResourceBundle.getLocale());
+
+	}
+	languages.add(decoLocalization);
+});
+		apiResponse.setStatusCode(StatusCode.OK.getCode());
+		apiResponse.setData(languages);
+		return  apiResponse;
+	}
 }

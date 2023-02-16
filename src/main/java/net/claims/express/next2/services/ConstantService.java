@@ -1,9 +1,6 @@
 package net.claims.express.next2.services;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.claims.express.next2.entities.*;
 import net.claims.express.next2.http.StatusCode;
@@ -262,14 +259,16 @@ public class ConstantService {
 		Localization localization = new Localization();
 List<DecoLocalization> decoLocalizationList = new ArrayList<>();
 List<CoreResourceBundle> coreResourceBundleList= db.coreResourceBundleRepository.findByLocale(local);
+		Map<String, String >  deco = new HashMap<>();
 coreResourceBundleList.forEach(coreResourceBundle -> {
-	DecoLocalization decoLocalization = new DecoLocalization();
-decoLocalization.setKey(coreResourceBundle.getResourceKey());
-decoLocalizationList.add(decoLocalization);
+	deco.put(coreResourceBundle.getResourceKey(),coreResourceBundle.getResourceValue());
+//	DecoLocalization decoLocalization = new DecoLocalization();
+//decoLocalization.setKey(coreResourceBundle.getResourceKey());
+//decoLocalizationList.add(decoLocalization);
 
 });
-localization.setDecoLocalizationList(decoLocalizationList);
-apiResponse.setData(localization);
+//localization.setDecoLocalizationList(decoLocalizationList);
+apiResponse.setData(deco);
 apiResponse.setStatusCode(StatusCode.OK.getCode());
 		return  apiResponse;
 	}

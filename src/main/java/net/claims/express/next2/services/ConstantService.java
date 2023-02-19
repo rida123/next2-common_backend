@@ -21,7 +21,7 @@ public class ConstantService {
 		ApiResponse apiResponse = new ApiResponse();
 		CompanyListResponse companyListResponse = new CompanyListResponse();
 		List<CompanyInfoResponse> companyList = new ArrayList<CompanyInfoResponse>();
-		List<CoreCompany> cLsit = db.companyRepository.findAll();
+		List<CoreCompany> cLsit = db.coreCompanyRepository.findAll();
 
 		cLsit.forEach(c -> {
 			CompanyInfoResponse cInfo = new CompanyInfoResponse();

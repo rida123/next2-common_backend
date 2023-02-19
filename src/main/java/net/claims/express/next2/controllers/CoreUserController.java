@@ -3,12 +3,15 @@ package net.claims.express.next2.controllers;
 import lombok.extern.slf4j.Slf4j;
 import net.claims.express.next2.entities.*;
 import net.claims.express.next2.http.StatusCode;
+import net.claims.express.next2.http.requests.AddUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.services.CoreCompanyService;
 import net.claims.express.next2.services.CoreProfileService;
 import net.claims.express.next2.services.CoreUserProfileService;
 import net.claims.express.next2.services.CoreUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +62,13 @@ public class    CoreUserController {
                                           @PathVariable("userId") String userId){
         return this.coreUserService.grantProfile(userId, profileId);
     }
+
+    @PostMapping("/addUser")
+    private ApiResponse addUser (@RequestBody AddUserRequest addUserRequest){
+
+        return this.coreUserService.addUser(addUserRequest);
+    }
+
 
 
     @PostMapping("/{userId}/update-roles")

@@ -5,8 +5,10 @@ import net.claims.express.next2.entities.*;
 import net.claims.express.next2.exceptions.BadRequestException;
 import net.claims.express.next2.exceptions.NotFoundException;
 import net.claims.express.next2.http.StatusCode;
+import net.claims.express.next2.http.requests.AddUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.repositories.*;
+import net.claims.express.next2.security.services.PwdEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -27,6 +30,8 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
     @Autowired
     CarsInsuranceEmployeeService carsInsuranceEmployeeService;
+    @Autowired
+    private PwdEncoder passwordEncoder;
 
     @Autowired
     private CoreCompanyProfileService companyProfileService;
@@ -305,6 +310,93 @@ public class CoreUserService  extends BaseService<CoreUser> {
        return  this.companyProfileService.
                     findByCoreProfileAndCoreCompany(profileId, companyId).orElseThrow( ()-> new NotFoundException("company profile of ID: " + profileId + " doesn't exist") );
 
+    }
+
+
+    public ApiResponse addUser(AddUserRequest addUserRequest) {
+        Optional<CoreUser>  coreUserOptional =db.coreUserRepository.findById(addUserRequest.getUserName());
+        ApiResponse apiResponse = new ApiResponse() ;
+        coreUserOptional.ifPresentOrElse(  (value)
+                        -> {
+
+                    apiResponse.setData(value);
+                    apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                    apiResponse.setMessage("User already exist.");
+                    apiResponse.setTitle("failed");
+
+                },
+                ()
+                        -> {
+
+          CoreUser coreUser = new CoreUser();
+          coreUser.setCompany_id(addUserRequest.getCompanyId());
+          coreUser.setId(addUserRequest.getUserName());
+                    String encoded_input_password = this.passwordEncoder.passwordEncoder().encode(addUserRequest.getPassword());
+                   coreUser.setActiveFlag(1);
+                    coreUser.setEncryptedPwd(encoded_input_password);
+                    coreUser.setSysCreatedDate( LocalDateTime.now());
+
+
+        CoreUser savedCoreUser =        db.coreUserRepository.save(coreUser)  ;
+CarsInsuranceEmployee carsInsuranceEmployee = new CarsInsuranceEmployee();
+carsInsuranceEmployee.setUsersState("RL");
+carsInsuranceEmployee.setUsersAbrev(addUserRequest.getFirstName().charAt(0)+""+addUserRequest.getLastName().charAt(0));
+carsInsuranceEmployee.setUsersCode(addUserRequest.getUserName());
+carsInsuranceEmployee.setUsersBranch(new BigDecimal(addUserRequest.getBranchId()));
+carsInsuranceEmployee.setUsersInsurance(new BigDecimal(addUserRequest.getCompanyId()));
+carsInsuranceEmployee.setUsersBranchId(addUserRequest.getCompanyId()+"."+addUserRequest.getBranchId());
+carsInsuranceEmployee.setInsuranceEmployeeId(addUserRequest.getCompanyId()+"."+addUserRequest.getBranchId()+"."+addUserRequest.getUserName());
+carsInsuranceEmployee.setSysCreatedDate( LocalDateTime.now());
+
+carsInsuranceEmployee.setUserLimitLawyerFees(addUserRequest.getUserLimitLawyerFees());
+carsInsuranceEmployee.setUserLimitDoctorFees(addUserRequest.getUserLimitDoctorFees());
+carsInsuranceEmployee.setUserLimitHospitalFees(addUserRequest.getUserLimitHospitalFees());
+carsInsuranceEmployee.setUserLimitExpertFees(addUserRequest.getUserLimitExpertFees());
+carsInsuranceEmployee.setUserLimitSurveyFees(addUserRequest.getUserLimitSurveyFees());
+carsInsuranceEmployee.setUserLimitExceedPercentage(addUserRequest.getUserLimitExceedPercentage());
+carsInsuranceEmployee.setUsersLimit(addUserRequest.getPaymentLimit());
+// TODO: 2/18/2023  recovery limit
+db.carsInsuranceEmployeeRepository.save(carsInsuranceEmployee);
+
+CoreUserPreference coreUserPreference = new CoreUserPreference();
+coreUserPreference.setCoreUser(savedCoreUser);
+coreUserPreference.setUserEmail(addUserRequest.getEmail());
+coreUserPreference.setLocale("en");
+coreUserPreference.setSysCreatedDate( LocalDateTime.now());
+
+Optional<CoreCompany> coreCompanyOptional = db.coreCompanyRepository.findById(String.valueOf(addUserRequest.getCompanyId()));
+coreCompanyOptional.ifPresentOrElse(
+        (value)
+                        -> {
+coreUserPreference.setCoreCompany(value);
+coreUserPreference.setCompanyName(value.getName());
+
+            apiResponse.setStatusCode(StatusCode.OK.getCode());
+            apiResponse.setMessage("User inserted.");
+            apiResponse.setTitle("success");
+                    },
+                    ()
+                            -> {
+
+
+                        apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                        apiResponse.setMessage("Company not found.");
+                        apiResponse.setTitle("failed");
+                    }
+
+
+);
+
+coreUserPreference.setSkinId("coreSkinSmall");
+coreUserPreference.setDisplayName(addUserRequest.getFirstName()+" "+addUserRequest.getLastName());
+db.coreUserPreferenceRepository.save(coreUserPreference);
+
+        }
+
+        );
+
+
+        return apiResponse;
     }
 
   /*  public List<CoreUser> getAllUsers() {

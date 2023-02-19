@@ -1,5 +1,8 @@
 package net.claims.express.next2.repositories;
 
+import net.claims.express.next2.entities.CarsInsuranceEmployee;
+import net.claims.express.next2.entities.CoreCompany;
+import net.claims.express.next2.entities.CoreUser;
 import net.claims.express.next2.http.response.DoorsListResponse;
 import net.claims.express.next2.services.CarsErrorlogService;
 import net.claims.express.next2.services.ConstantService;
@@ -44,7 +47,15 @@ public class DB {
     public CarBrandRepository carBrandRepository;
 
     @Autowired
-    public CompanyRepository companyRepository;
+    public CoreCompanyRepository coreCompanyRepository;
     @Autowired
     public CoreResourceBundleRepository coreResourceBundleRepository;
+    @Autowired
+    public CoreUserPreferenceRepository coreUserPreferenceRepository ;
+
+    @Autowired
+    public CoreUserRepository coreUserRepository ;
+
+    @Autowired
+    public CarsInsuranceEmployeeRepository carsInsuranceEmployeeRepository ;
 }

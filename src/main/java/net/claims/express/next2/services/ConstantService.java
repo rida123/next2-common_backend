@@ -306,4 +306,24 @@ coreResourceBundleList.forEach(coreResourceBundle -> {
 		apiResponse.setData(languages);
 		return  apiResponse;
 	}
+
+	public ApiResponse getBranchList(String companyId) {
+List<CarsBranch> carsInsuranceList =db.carsBranchRepository.findByCarsInsurance(companyId);
+ApiResponse apiResponse = new ApiResponse();
+List<BranchResponse> carsBranchList= new ArrayList<>();
+carsInsuranceList.forEach(
+		carsBranch -> {
+			BranchResponse branch = new BranchResponse();
+			branch.setCode(carsBranch.getBranchId());
+			branch.setDescription(carsBranch.getBranchDes());
+			carsBranchList.add(branch);
+		}
+);
+apiResponse.setData(carsBranchList);
+apiResponse.setTitle("success");
+apiResponse.setMessage("success");
+apiResponse.setStatusCode(StatusCode.OK.getCode());
+
+return  apiResponse;
+	}
 }

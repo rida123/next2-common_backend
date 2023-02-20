@@ -101,6 +101,14 @@ private ApiResponse getDirections (){
 	ApiResponse  response= constantService.getDirections();
 	return  response ;
 }
+
+	@GetMapping("/getBranchList")
+	private ApiResponse getBranchList (@RequestParam(name="companyId") String companyId){
+		ApiResponse  response= constantService.getBranchList(companyId);
+		return  response ;
+	}
+
+
 @GetMapping("/getPolicyType")
 private ApiResponse getPolicyType (){
 	ApiResponse  response= constantService.getPolicyType();

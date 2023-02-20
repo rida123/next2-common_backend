@@ -11,7 +11,7 @@ import java.util.List;
 @EnableJpaRepositories
 @Repository
 public interface CarsBranchRepository extends BaseRepository <CarsBranch,String >{
-    @Query("select b from CarsBranch join fetch carsInsurance  i  where i.insuranceId = ?1 ")
+    @Query("select b from CarsBranch b join fetch b.carsInsurance  i  where i.insuranceId = ?1 ")
    List<CarsBranch> findByCarsInsurance(String companyId);
 }
 

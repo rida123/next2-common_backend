@@ -9,18 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -54,7 +43,7 @@ public class CarsBranch extends BaseEntity implements Serializable {
   
   /*  @OneToMany(orphanRemoval = true, mappedBy = "carsBranch", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<CarsFilesSent> carsFilesSentList;*/
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BRANCH_INSURANCE_ID")
     private CarsInsurance carsInsurance;
 

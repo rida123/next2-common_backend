@@ -12,7 +12,7 @@ import java.util.UUID;
 @Table(name = "CARS_INSURANCE")
 public class CarsInsurance extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -5789904783559717705L;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "INSURANCE_CODE", nullable = false,insertable = false , updatable = false)
     private InsuranceLov insuranceCodeLov;
  

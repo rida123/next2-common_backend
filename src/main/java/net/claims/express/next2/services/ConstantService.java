@@ -314,7 +314,7 @@ List<BranchResponse> carsBranchList= new ArrayList<>();
 carsInsuranceList.forEach(
 		carsBranch -> {
 			BranchResponse branch = new BranchResponse();
-			branch.setCode(carsBranch.getBranchId());
+			branch.setCode(carsBranch.getBranchCode().toString());
 			branch.setDescription(carsBranch.getBranchDes());
 			carsBranchList.add(branch);
 		}

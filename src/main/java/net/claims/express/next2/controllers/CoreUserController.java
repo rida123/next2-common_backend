@@ -1,7 +1,8 @@
 package net.claims.express.next2.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import net.claims.express.next2.entities.*;
+import net.claims.express.next2.entities.CoreProfile;
+import net.claims.express.next2.entities.CoreUser;
 import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.requests.AddUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
@@ -10,15 +11,9 @@ import net.claims.express.next2.services.CoreProfileService;
 import net.claims.express.next2.services.CoreUserProfileService;
 import net.claims.express.next2.services.CoreUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/user")

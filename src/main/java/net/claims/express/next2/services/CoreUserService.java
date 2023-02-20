@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class CoreUserService  extends BaseService<CoreUser> {
+public class CoreUserService extends BaseService<CoreUser> {
     @Autowired
     private DB db;
 
@@ -54,7 +54,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
     //old params: (String coreUserId, CoreCompanyProfile profile)
     @Transactional
-    public ApiResponse grantProfile(String coreUserId, String profileId ) {
+    public ApiResponse grantProfile(String coreUserId, String profileId) {
         // ----Audit info: current user using the system
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -99,6 +99,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
     /**
      * we get company id from user
+     *
      * @param userId
      * @return
      */
@@ -126,7 +127,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         coreUserProfile.setSysUpdatedDate(LocalDateTime.now());
         coreUserProfile.setSysUpdatedBy(loginUser);
 
-       return this.coreUserProfileService.saveAndFlush(coreUserProfile);
+        return this.coreUserProfileService.saveAndFlush(coreUserProfile);
         //todo: NOTE:    //save is done manually because fields like id in coreUserProfile is dynamically generated
         //            //old work: boolean result = user.getProfiles().add(profile);
         //            //old work:     profile.getCoreUsers().add(user);
@@ -137,6 +138,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
         CarsInsuranceEmployee employeeInfo = checkEmployee.orElseThrow(() -> new BadRequestException("user of ID: " + coreUserId + " doesn't exist"));
         return employeeInfo;
     }
+
     @Transactional
     public ApiResponse revokeProfile(String userId, String profileId) {
         CoreUser user = this.getCoreUser(userId);
@@ -161,9 +163,8 @@ public class CoreUserService  extends BaseService<CoreUser> {
         if (original_companyProfiles.contains(profileToRemove)) {
             //profile to remove from core_user_profile table:
             String userProfileId = core_user.getId() + "." + profileToRemove.getId();
-           this.coreUserProfileService.deleteById(userProfileId);
-        }
-        else {
+            this.coreUserProfileService.deleteById(userProfileId);
+        } else {
             System.out.println("user doesn't have this profile as first");
             throw new NotFoundException("profile: " + profileToRemove.getCoreProfile().getName() + " user doen't have this profile to remove");
         }
@@ -176,6 +177,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
     /**
      * get all profiles that a user is enrolled in
+     *
      * @param userId
      * @return
      */
@@ -202,7 +204,7 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
             Set<CoreRole> allRolesPerProfile = coreProfile.getProfileRoles();
 
-            if(core_user_profile.getUserRoles() != null) {
+            if (core_user_profile.getUserRoles() != null) {
                 for (CoreRole granted_role : core_user_profile.getUserRoles()) {
                     for (CoreRole role : allRolesPerProfile) {
                         if (granted_role.equals(role)) {
@@ -222,13 +224,13 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
     public CoreUser getCoreUser(String coreUserId) {
         Optional<CoreUser> checkUser = this.coreUserRepository.findById(coreUserId);
-        CoreUser user = checkUser.orElseThrow( () -> new NotFoundException("user of ID: " + coreUserId + " doesn't exist") );
+        CoreUser user = checkUser.orElseThrow(() -> new NotFoundException("user of ID: " + coreUserId + " doesn't exist"));
         return user;
     }
 
     public CoreProfile getCoreProfile(String profileId) {
         Optional<CoreProfile> checkProfile = this.profileService.findById(profileId);
-        CoreProfile profile = checkProfile.orElseThrow( () -> new BadRequestException("profile of ID: " + profileId + " doesn't exist") );
+        CoreProfile profile = checkProfile.orElseThrow(() -> new BadRequestException("profile of ID: " + profileId + " doesn't exist"));
         return profile;
     }
 
@@ -255,14 +257,14 @@ public class CoreUserService  extends BaseService<CoreUser> {
 
 
         /*now get the CoreCompanyProfile that represents the profile we want to update its roles and if its
-        * not provided to the company yet, we send an error*/
+         * not provided to the company yet, we send an error*/
 
         CoreCompanyProfile foundCompanyProfile = this.getCompanyProfile(profile_with_updateRoles.getId(), insurance_companyId);
 
         Optional<CoreUserProfile> optionalCoreUserProfile =
                 this.coreUserProfileService.findById(userId + "." + foundCompanyProfile.getId());
 
-        if(optionalCoreUserProfile.isEmpty()) {
+        if (optionalCoreUserProfile.isEmpty()) {
             //We throw an exception  because user is supposed to have this profile as prerequisite in order
             // to modify his roles:
             throw new BadRequestException("User must have " + foundCompanyProfile.getId());
@@ -275,10 +277,10 @@ public class CoreUserService  extends BaseService<CoreUser> {
             System.out.println("count of roles: " + userProfileRoles.size());
 
             CoreUserProfilePerm perm;
-            for (CoreRole role: profile_with_updateRoles.getProfileRoles()) {
-                System.out.println("role: " + role.getDescription()  + ", granted => " + role.getGranted());
-                if(role.getGranted() == true) { //if granted = true and not already found in core_user_profile_perm tbl
-                    if(!this.coreUserProfilePermService.existById(userProfile.getId() + "." +  role.getId())) {
+            for (CoreRole role : profile_with_updateRoles.getProfileRoles()) {
+                System.out.println("role: " + role.getDescription() + ", granted => " + role.getGranted());
+                if (role.getGranted() == true) { //if granted = true and not already found in core_user_profile_perm tbl
+                    if (!this.coreUserProfilePermService.existById(userProfile.getId() + "." + role.getId())) {
                         perm = new CoreUserProfilePerm();
                         perm.setId(userProfile.getId() + "." + role.getId());
                         perm.setCoreUserProfile(userProfile);
@@ -292,31 +294,30 @@ public class CoreUserService  extends BaseService<CoreUser> {
                         perm.setSysUpdatedDate(LocalDateTime.now());
                         this.coreUserProfilePermService.save(perm);
                     }
-                }
-                else {
+                } else {
                     //revoke any role that is has granted = false;
-                    if(this.coreUserProfilePermService.existById(userProfile.getId() + "." +  role.getId())) {
-                        this.coreUserProfilePermService.deleteById(userProfile.getId() + "." +  role.getId());
+                    if (this.coreUserProfilePermService.existById(userProfile.getId() + "." + role.getId())) {
+                        this.coreUserProfilePermService.deleteById(userProfile.getId() + "." + role.getId());
                     }
                 }
             }//end looping through roles:
             return new ApiResponse(StatusCode.OK.getCode(), "success", "Roles updated successfully.", this.getProfilesPerUser(userId));
-            
+
         }
 
     }
 
     public CoreCompanyProfile getCompanyProfile(String profileId, String companyId) {
-       return  this.companyProfileService.
-                    findByCoreProfileAndCoreCompany(profileId, companyId).orElseThrow( ()-> new NotFoundException("company profile of ID: " + profileId + " doesn't exist") );
+        return this.companyProfileService.
+                findByCoreProfileAndCoreCompany(profileId, companyId).orElseThrow(() -> new NotFoundException("company profile of ID: " + profileId + " doesn't exist"));
 
     }
 
 
     public ApiResponse addUser(AddUserRequest addUserRequest) {
-        Optional<CoreUser>  coreUserOptional =db.coreUserRepository.findById(addUserRequest.getUserName());
-        ApiResponse apiResponse = new ApiResponse() ;
-        coreUserOptional.ifPresentOrElse(  (value)
+        Optional<CoreUser> coreUserOptional = db.coreUserRepository.findById(addUserRequest.getUserName());
+        ApiResponse apiResponse = new ApiResponse();
+        coreUserOptional.ifPresentOrElse((value)
                         -> {
 
                     apiResponse.setData(value);
@@ -328,70 +329,86 @@ public class CoreUserService  extends BaseService<CoreUser> {
                 ()
                         -> {
 
-          CoreUser coreUser = new CoreUser();
-          coreUser.setCompany_id(addUserRequest.getCompanyId());
-          coreUser.setId(addUserRequest.getUserName());
+                    CoreUser coreUser = new CoreUser();
+                    coreUser.setCompany_id(addUserRequest.getCompanyId());
+                    coreUser.setId(addUserRequest.getUserName());
                     String encoded_input_password = this.passwordEncoder.passwordEncoder().encode(addUserRequest.getPassword());
-                   coreUser.setActiveFlag(1);
+                    coreUser.setActiveFlag(1);
                     coreUser.setEncryptedPwd(encoded_input_password);
-                    coreUser.setSysCreatedDate( LocalDateTime.now());
+                    coreUser.setSysCreatedDate(LocalDateTime.now());
+                    coreUser.setSysVersionNumber(1l);
+                    coreUser.setSysCreatedBy("anonymous");
+                    coreUser.setSysUpdatedDate(LocalDateTime.now());
+
+                    CoreUser savedCoreUser = db.coreUserRepository.save(coreUser);
+                    CarsInsuranceEmployee carsInsuranceEmployee = new CarsInsuranceEmployee();
+                    carsInsuranceEmployee.setUsersState("RL");
+                    carsInsuranceEmployee.setUsersAbrev(addUserRequest.getFirstName().charAt(0) + "" + addUserRequest.getLastName().charAt(0));
+                    carsInsuranceEmployee.setUsersCode(addUserRequest.getUserName());
+                    carsInsuranceEmployee.setUsersBranch(new BigDecimal(addUserRequest.getBranchId()));
+                    carsInsuranceEmployee.setUsersInsurance(new BigDecimal(addUserRequest.getCompanyId()));
+                    carsInsuranceEmployee.setUsersBranchId(addUserRequest.getCompanyId() + "." + addUserRequest.getBranchId());
+                    carsInsuranceEmployee.setInsuranceEmployeeId(addUserRequest.getCompanyId() + "." + addUserRequest.getBranchId() + "." + addUserRequest.getUserName());
+                    carsInsuranceEmployee.setSysCreatedDate(LocalDateTime.now());
+
+                    carsInsuranceEmployee.setUserLimitLawyerFees(addUserRequest.getUserLimitLawyerFees());
+                    carsInsuranceEmployee.setUserLimitDoctorFees(addUserRequest.getUserLimitDoctorFees());
+                    carsInsuranceEmployee.setUserLimitHospitalFees(addUserRequest.getUserLimitHospitalFees());
+                    carsInsuranceEmployee.setUserLimitExpertFees(addUserRequest.getUserLimitExpertFees());
+                    carsInsuranceEmployee.setUserLimitSurveyFees(addUserRequest.getUserLimitSurveyFees());
+                    carsInsuranceEmployee.setUserLimitExceedPercentage(addUserRequest.getUserLimitExceedPercentage());
+                    carsInsuranceEmployee.setUsersLimit(addUserRequest.getPaymentLimit());
+
+                    carsInsuranceEmployee.setSysCreatedDate(LocalDateTime.now());
+                    carsInsuranceEmployee.setSysVersionNumber(1l);
+                    carsInsuranceEmployee.setSysCreatedBy("anonymous");
+                    carsInsuranceEmployee.setSysUpdatedDate(LocalDateTime.now());
 
 
-        CoreUser savedCoreUser =        db.coreUserRepository.save(coreUser)  ;
-CarsInsuranceEmployee carsInsuranceEmployee = new CarsInsuranceEmployee();
-carsInsuranceEmployee.setUsersState("RL");
-carsInsuranceEmployee.setUsersAbrev(addUserRequest.getFirstName().charAt(0)+""+addUserRequest.getLastName().charAt(0));
-carsInsuranceEmployee.setUsersCode(addUserRequest.getUserName());
-carsInsuranceEmployee.setUsersBranch(new BigDecimal(addUserRequest.getBranchId()));
-carsInsuranceEmployee.setUsersInsurance(new BigDecimal(addUserRequest.getCompanyId()));
-carsInsuranceEmployee.setUsersBranchId(addUserRequest.getCompanyId()+"."+addUserRequest.getBranchId());
-carsInsuranceEmployee.setInsuranceEmployeeId(addUserRequest.getCompanyId()+"."+addUserRequest.getBranchId()+"."+addUserRequest.getUserName());
-carsInsuranceEmployee.setSysCreatedDate( LocalDateTime.now());
 
-carsInsuranceEmployee.setUserLimitLawyerFees(addUserRequest.getUserLimitLawyerFees());
-carsInsuranceEmployee.setUserLimitDoctorFees(addUserRequest.getUserLimitDoctorFees());
-carsInsuranceEmployee.setUserLimitHospitalFees(addUserRequest.getUserLimitHospitalFees());
-carsInsuranceEmployee.setUserLimitExpertFees(addUserRequest.getUserLimitExpertFees());
-carsInsuranceEmployee.setUserLimitSurveyFees(addUserRequest.getUserLimitSurveyFees());
-carsInsuranceEmployee.setUserLimitExceedPercentage(addUserRequest.getUserLimitExceedPercentage());
-carsInsuranceEmployee.setUsersLimit(addUserRequest.getPaymentLimit());
 // TODO: 2/18/2023  recovery limit
-db.carsInsuranceEmployeeRepository.save(carsInsuranceEmployee);
+                    db.carsInsuranceEmployeeRepository.save(carsInsuranceEmployee);
 
-CoreUserPreference coreUserPreference = new CoreUserPreference();
-coreUserPreference.setCoreUser(savedCoreUser);
-coreUserPreference.setUserEmail(addUserRequest.getEmail());
-coreUserPreference.setLocale("en");
-coreUserPreference.setSysCreatedDate( LocalDateTime.now());
-
-Optional<CoreCompany> coreCompanyOptional = db.coreCompanyRepository.findById(String.valueOf(addUserRequest.getCompanyId()));
-coreCompanyOptional.ifPresentOrElse(
-        (value)
-                        -> {
-coreUserPreference.setCoreCompany(value);
-coreUserPreference.setCompanyName(value.getName());
-
-            apiResponse.setStatusCode(StatusCode.OK.getCode());
-            apiResponse.setMessage("User inserted.");
-            apiResponse.setTitle("success");
-                    },
-                    ()
-                            -> {
+                    CoreUserPreference coreUserPreference = new CoreUserPreference();
+                    coreUserPreference.setCoreUser(savedCoreUser);
+                    coreUserPreference.setUserEmail(addUserRequest.getEmail());
+                    coreUserPreference.setLocale("en");
+                    coreUserPreference.setSysCreatedDate(LocalDateTime.now());
 
 
-                        apiResponse.setStatusCode(StatusCode.FAILED.getCode());
-                        apiResponse.setMessage("Company not found.");
-                        apiResponse.setTitle("failed");
-                    }
+                    coreUserPreference.setSysVersionNumber(1l);
+                    coreUserPreference.setSysCreatedBy("anonymous");
+                    coreUserPreference.setSysUpdatedDate(LocalDateTime.now());
+                    coreUserPreference.setLastLoginDate(LocalDateTime.now());
+
+                    Optional<CoreCompany> coreCompanyOptional = db.coreCompanyRepository.findById(String.valueOf(addUserRequest.getCompanyId()));
+                    coreCompanyOptional.ifPresentOrElse(
+                            (value)
+                                    -> {
+                                coreUserPreference.setCoreCompany(value);
+                                coreUserPreference.setCompanyName(value.getName());
+
+                                apiResponse.setStatusCode(StatusCode.OK.getCode());
+                                apiResponse.setMessage("User inserted.");
+                                apiResponse.setTitle("success");
+                            },
+                            ()
+                                    -> {
 
 
-);
+                                apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                                apiResponse.setMessage("Company not found.");
+                                apiResponse.setTitle("failed");
+                            }
 
-coreUserPreference.setSkinId("coreSkinSmall");
-coreUserPreference.setDisplayName(addUserRequest.getFirstName()+" "+addUserRequest.getLastName());
-db.coreUserPreferenceRepository.save(coreUserPreference);
 
-        }
+                    );
+
+                    coreUserPreference.setSkinId("coreSkinSmall");
+                    coreUserPreference.setDisplayName(addUserRequest.getFirstName() + " " + addUserRequest.getLastName());
+                    db.coreUserPreferenceRepository.save(coreUserPreference);
+
+                }
 
         );
 
@@ -408,4 +425,4 @@ db.coreUserPreferenceRepository.save(coreUserPreference);
         return  usernames;*//*
         return coreUsers;
     }*/
-    }
+}

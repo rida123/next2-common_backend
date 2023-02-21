@@ -52,14 +52,6 @@ private ApiResponse getCarTrademarkList (@RequestParam(name="carBrandId") String
 	}
 
 
-
-
-
-
-
-
-
-
 @GetMapping("/getDoors")
 private ApiResponse getDoors (){
 	ApiResponse  response= constantService.getDoors();

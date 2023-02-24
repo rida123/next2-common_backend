@@ -11,4 +11,5 @@ import java.util.List;
 public interface CoreProfileRepository extends BaseRepository<CoreProfile, String>{
 
 //    List<CoreProfile> findByCoreCompany(CoreCompany c);
+public List<CoreProfile> findByCodeNotIn(List<CoreProfile> allProfiles);
 }

@@ -79,7 +79,7 @@ public class    CoreUserController {
     }//old return type: List<CoreProfile>
 
     @GetMapping("{userId}/addPprofiles")
-    public ApiResponse getUnGrantedPerUser(@PathVariable String userId) {
+    public ApiResponse geProfilesNOtYetGranted(@PathVariable String userId) {
         List<CoreProfile> userProfiles =  this.coreUserService.getProfilesPerUser(userId);
         return new ApiResponse(StatusCode.OK.getCode(), "success", "Profiles by user returned successfully.", userProfiles);
     }//old return type: List<CoreProfile>

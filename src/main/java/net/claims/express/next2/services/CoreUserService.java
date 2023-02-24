@@ -111,10 +111,11 @@ public class CoreUserService extends BaseService<CoreUser> {
 
         List<CoreProfile> companyProfiles = this.companyProfileService.getProfilesByCompany(companyId);
         List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getUserProfiles(userId);
-        for (CoreProfile p : companyProfiles) {
+        unGrantedProfiles = this.profileService.notIn(companyProfiles);
+        /*for (CoreProfile p : companyProfiles) {
 
-        }
-        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles returned successfully.", companyProfiles);
+        }*/
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles returned successfully.", unGrantedProfiles);
     }
 
     @Transactional

@@ -31,9 +31,9 @@ public class UsernamePwdProvider implements AuthenticationProvider {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
         String user_details_pwd = userDetails.getPassword();
         String encoded_input_password = this.passwordEncoder.passwordEncoder().encode(password);
-
 //        if(this.passwordEncoder.passwordEncoder().matches(password, userDetails.getPassword())) {
-        if(encoded_input_password.equals(user_details_pwd)) {
+
+        if(encoded_input_password.matches(user_details_pwd)) {
             return new UsernamePasswordAuthentication(userDetails, password, userDetails.getAuthorities());
         }
         throw new BadCredentialsException("Bad Credentials: password encoder failed");

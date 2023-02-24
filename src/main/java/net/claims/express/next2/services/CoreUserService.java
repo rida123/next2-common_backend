@@ -371,8 +371,7 @@ public class CoreUserService extends BaseService<CoreUser> {
                     carsInsuranceEmployee.setSysCreatedBy("anonymous");
                     carsInsuranceEmployee.setSysUpdatedDate(LocalDateTime.now());
 
-
-// TODO: 2/18/2023  recovery limit
+                    carsInsuranceEmployee.setUserLimitRecovery(addUserRequest.getRecoverLimit());
                     db.carsInsuranceEmployeeRepository.save(carsInsuranceEmployee);
 
                     CoreUserPreference coreUserPreference = new CoreUserPreference();

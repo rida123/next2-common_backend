@@ -107,7 +107,13 @@ public class CoreUserService extends BaseService<CoreUser> {
         CarsInsuranceEmployee employeeInfo = this.getEmployeeInfo(userId);
         String companyId = employeeInfo.getInsuranceEmployeeId().substring(0, employeeInfo.getInsuranceEmployeeId().indexOf("."));
 
+        List<CoreProfile> unGrantedProfiles = new ArrayList<>();
+
         List<CoreProfile> companyProfiles = this.companyProfileService.getProfilesByCompany(companyId);
+        List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getUserProfiles(userId);
+        for (CoreProfile p : companyProfiles) {
+
+        }
         return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles returned successfully.", companyProfiles);
     }
 
@@ -363,7 +369,6 @@ public class CoreUserService extends BaseService<CoreUser> {
                     carsInsuranceEmployee.setSysVersionNumber(1l);
                     carsInsuranceEmployee.setSysCreatedBy("anonymous");
                     carsInsuranceEmployee.setSysUpdatedDate(LocalDateTime.now());
-
 
 
 // TODO: 2/18/2023  recovery limit

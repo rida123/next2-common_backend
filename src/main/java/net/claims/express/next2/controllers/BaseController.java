@@ -12,6 +12,7 @@ public abstract class BaseController {
   //  private TokenUtil tokenUtil;
     public SecurityUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Type===== " + authentication.getPrincipal().toString());
         return (SecurityUser) authentication.getPrincipal();
 
     }

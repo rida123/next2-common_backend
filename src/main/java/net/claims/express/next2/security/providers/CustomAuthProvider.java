@@ -2,6 +2,7 @@ package net.claims.express.next2.security.providers;
 
 import net.claims.express.next2.security.model.CustomTokenAuthentication;
 import net.claims.express.next2.security.services.JWTService;
+import net.claims.express.next2.security.services.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ import java.util.Map;
 
 @Component
 public class CustomAuthProvider implements AuthenticationProvider {
-
+    @Autowired
+    private JpaUserDetailsService userDetailsService;
     @Autowired
     JWTService jwtService;
 
@@ -49,7 +52,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
                     GrantedAuthority ga = new SimpleGrantedAuthority(authority);
                     authorities.add(ga);
                 }
-                return new CustomTokenAuthentication(true,jwtToken, authorities, user);
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(user);
+                return new CustomTokenAuthentication(true,jwtToken, authorities, userDetails);
 
             }
             catch (Exception e) {

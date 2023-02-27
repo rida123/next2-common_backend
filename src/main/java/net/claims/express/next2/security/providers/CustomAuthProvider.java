@@ -55,7 +55,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(user);
                 return new CustomTokenAuthentication(true,jwtToken, authorities, userDetails);
 
-            }
+        }
             catch (Exception e) {
                 System.out.println("Exception: " + e.toString());
                 //token is not valid =>null will be stored in the SecurityContextHolder

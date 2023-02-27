@@ -19,7 +19,7 @@ public class CustomTokenAuthentication implements Authentication {
     private final boolean authentication_status;
     private final String token;
     private List<GrantedAuthority> authorityList;
-    //private String username;
+//    private String username;
     private UserDetails userDetails;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -40,6 +40,7 @@ public class CustomTokenAuthentication implements Authentication {
     @Override
     public Object getPrincipal() {
         return userDetails;
+//        return username;
     }
 
     @Override
@@ -55,5 +56,6 @@ public class CustomTokenAuthentication implements Authentication {
     @Override
     public String getName() {
          return userDetails.getUsername();
+//        return username;
     }
 }

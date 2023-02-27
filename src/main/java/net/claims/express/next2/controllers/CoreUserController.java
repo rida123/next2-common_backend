@@ -78,10 +78,10 @@ public class    CoreUserController {
         return new ApiResponse(StatusCode.OK.getCode(), "success", "Profiles by user returned successfully.", userProfiles);
     }//old return type: List<CoreProfile>
 
-    @GetMapping("{userId}/addPprofiles")
+    @GetMapping("{userId}/addProfiles")
     public ApiResponse geProfilesNOtYetGranted(@PathVariable String userId) {
-        List<CoreProfile> userProfiles =  this.coreUserService.getProfilesPerUser(userId);
-        return new ApiResponse(StatusCode.OK.getCode(), "success", "Profiles by user returned successfully.", userProfiles);
+       return this.coreUserService.getMissingCompanyProfilesByUser(userId);
+//        return new ApiResponse(StatusCode.OK.getCode(), "success", "Profiles by user returned succeoressfully.", userProfiles);
     }//old return type: List<CoreProfile>
 
 }

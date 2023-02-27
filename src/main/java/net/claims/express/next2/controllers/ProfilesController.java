@@ -38,8 +38,9 @@ public class ProfilesController extends BaseController {
 
     @GetMapping("/{userId}")
     public ApiResponse getAllProfilesForCompany(@PathVariable("userId") String userId) {
-        CoreUser user = this.coreUserService.getCoreUser(userId);
-      return this.coreUserService.getUserCompanyProfiles(user.getId());
+//        CoreUser user = this.coreUserService.getCoreUser(userId);
+//      return this.coreUserService.getUserCompanyProfiles(user.getId());
+        return null;
     }
 
 

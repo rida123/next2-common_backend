@@ -7,6 +7,7 @@ import net.claims.express.next2.exceptions.NotFoundException;
 import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.requests.AddUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
+import net.claims.express.next2.http.response.MyBaseResponse;
 import net.claims.express.next2.repositories.*;
 import net.claims.express.next2.security.services.PwdEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class CoreUserService extends BaseService<CoreUser> {
     CarsInsuranceEmployeeService carsInsuranceEmployeeService;
     @Autowired
     private PwdEncoder passwordEncoder;
+
+    @Autowired
+    private CoreCompanyProfileRepository coreCompanyProfileRepository;
 
     @Autowired
     private CoreCompanyProfileService companyProfileService;
@@ -98,24 +102,44 @@ public class CoreUserService extends BaseService<CoreUser> {
     }
 
     /**
-     * we get company id from user
-     *
+     * this function will return all company profiles that are not granted for a given user yet.
+     * this function is used in the front-end where we want to add a profile for a user, so we show list
+     * of company profiles missing to that user
      * @param userId
      * @return
      */
-    public ApiResponse getUserCompanyProfiles(String userId) {
+    public ApiResponse getMissingCompanyProfilesByUser(String userId) {
         CarsInsuranceEmployee employeeInfo = this.getEmployeeInfo(userId);
         String companyId = employeeInfo.getInsuranceEmployeeId().substring(0, employeeInfo.getInsuranceEmployeeId().indexOf("."));
 
+        List<CoreCompanyProfile> unGrantedCompanyProfiles = new ArrayList<>();
         List<CoreProfile> unGrantedProfiles = new ArrayList<>();
-
+List<MyBaseResponse> myBaseResponses = new ArrayList<>();
         List<CoreProfile> companyProfiles = this.companyProfileService.getProfilesByCompany(companyId);
-        List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getUserProfiles(userId);
-        unGrantedProfiles = this.profileService.notIn(companyProfiles);
+//        List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getUserProfiles(userId);
+        List<String> registeredProfiles =new ArrayList<>();
+                this.coreUserProfileService.getUserProfiles(userId).forEach( p -> {
+                    String companyProfile = p.getCoreCompanyProfileId();
+                    registeredProfiles.add(companyProfile.substring(companyProfile.indexOf(".") + 1));
+        });
+        unGrantedCompanyProfiles = this.coreCompanyProfileRepository.findByCoreCompanyIdAndNotWithinUserProfiles(companyId, registeredProfiles);
+       unGrantedCompanyProfiles.forEach( p -> {
+           String company_profile_id = p.getId();
+           unGrantedProfiles.add(this.profileService.findById(company_profile_id.substring(company_profile_id.indexOf(".") + 1)).get());
+        });
+
         /*for (CoreProfile p : companyProfiles) {
 
         }*/
-        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles returned successfully.", unGrantedProfiles);
+        unGrantedProfiles.forEach(
+                coreProfile->{
+                    MyBaseResponse myBaseResponse = new MyBaseResponse();
+                    myBaseResponse.setCode(coreProfile.getCode());
+                    myBaseResponse.setDescription(coreProfile.getDescription());
+                    myBaseResponses.add(myBaseResponse);
+                }
+        );
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles not granted for user " +userId  , myBaseResponses);
     }
 
     @Transactional

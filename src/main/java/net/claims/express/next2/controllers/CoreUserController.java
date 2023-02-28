@@ -84,4 +84,28 @@ public class    CoreUserController {
 //        return new ApiResponse(StatusCode.OK.getCode(), "success", "Profiles by user returned succeoressfully.", userProfiles);
     }//old return type: List<CoreProfile>
 
+
+    @PostMapping("/update-user")
+    public ApiResponse updateUser (@RequestParam String userId, @RequestParam int active){
+        System.out.println("we are in update roles");
+        return this.coreUserService.updateUser(userId,active );
+    }
+
+    @GetMapping("/userSearch")
+    public ApiResponse searchUser(@RequestParam String username,@RequestParam String name) {
+        return this.coreUserService.searchUser(username,name);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

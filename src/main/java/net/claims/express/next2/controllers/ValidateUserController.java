@@ -33,7 +33,7 @@ public class ValidateUserController {
 
     //end from melhem
 
-    @RequestMapping("validate")
+    @RequestMapping(value = "validate")
     public ApiResponse userIsValid() {
         System.out.println("@Validate controller....");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

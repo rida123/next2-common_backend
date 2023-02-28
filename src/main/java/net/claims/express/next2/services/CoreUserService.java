@@ -8,6 +8,7 @@ import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.requests.AddUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.http.response.MyBaseResponse;
+import net.claims.express.next2.http.response.UserInfo;
 import net.claims.express.next2.repositories.*;
 import net.claims.express.next2.security.services.PwdEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -443,6 +444,95 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
 
 
         return apiResponse;
+    }
+
+    public ApiResponse updateUser(String userId, int active) {
+        ApiResponse apiResponse = new ApiResponse();
+        Optional<CoreUser> coreUserOptional = db.coreUserRepository.findById(userId);
+        coreUserOptional.ifPresentOrElse(
+                (coreUser)->{
+                    coreUser.setSysUpdatedDate(LocalDateTime.now());
+                    coreUser.setActiveFlag(active);
+                    db.coreUserRepository.save(coreUser);
+                    apiResponse.setStatusCode(StatusCode.OK.getCode());
+                    apiResponse.setTitle("success");
+                    apiResponse.setTitle(" active status was changed");
+                },
+                ()->{
+                  apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                  apiResponse.setTitle("User not found");
+                    apiResponse.setTitle("Invalid User ");
+
+                }
+        );
+        return  apiResponse ;
+    }
+
+    public ApiResponse searchUser(String username, String name) {
+        ApiResponse apiResponse = new ApiResponse();
+        List <UserInfo> userInfoList= new ArrayList<>();
+        if((username==null || username.isEmpty()) && (name==null||name.isEmpty())){
+           List<CoreUser>coreUsers = db.userRepository.findAll();
+           coreUsers.forEach((coreUser)->{
+               UserInfo userInfo = new UserInfo();
+
+               userInfo.setActive(coreUser.getActiveFlag());
+               userInfo.setUserName(coreUser.getId());
+            //   userInfo.setBranchId(coreUser.getCompany_id());
+               if(coreUser.getId()!=null){
+               Optional <CarsInsuranceEmployee>carsInsuranceEmployeeOptional  = db.carsInsuranceEmployeeRepository.findByUsersCode(coreUser.getId());
+               carsInsuranceEmployeeOptional.ifPresentOrElse(
+                       (carsInsuranceEmployee)->{
+                           userInfo.setPaymentLimit(carsInsuranceEmployee.getUsersLimit());
+                           userInfo.setRecoverLimit(carsInsuranceEmployee.getUserLimitRecovery());
+                           userInfo.setUserLimitDoctorFees(carsInsuranceEmployee.getUserLimitDoctorFees());
+                           userInfo.setUserLimitLawyerFees(carsInsuranceEmployee.getUserLimitLawyerFees());
+                           userInfo.setUserLimitHospitalFees(carsInsuranceEmployee.getUserLimitHospitalFees());
+                           userInfo.setUserLimitSurveyFees(carsInsuranceEmployee.getUserLimitSurveyFees());
+                           userInfo.setUserLimitTaxiFees(carsInsuranceEmployee.getUserLimitTaxiFees());
+                           userInfo.setUserLimitExpertFees(carsInsuranceEmployee.getUserLimitExpertFees());
+                           userInfo.setUserLimitExceedPercentage(carsInsuranceEmployee.getUserLimitExceedPercentage());
+                           userInfo.setBranchId(carsInsuranceEmployee.getUsersBranchId());
+
+                       },
+                       ()->{
+
+                       }
+
+
+               );
+
+               }
+
+               Optional <CoreUserPreference> coreUserPreferenceOptional  = db.coreUserPreferenceRepository.findByCoreUser(coreUser.getId());
+
+               coreUserPreferenceOptional.ifPresentOrElse(
+                       (coreUserPreference)->{
+                userInfo.setEmail(coreUserPreference.getUserEmail());
+               userInfo.setCompanyId(coreUserPreference.getCoreCompany().getId());
+               userInfo.setCompanyDescription(coreUserPreference.getCoreCompany().getLegalName());
+               userInfo.setDisplayName(coreUserPreference.getDisplayName());
+
+
+
+
+                       },
+                       ()->{
+
+                       }
+
+
+               );
+
+
+
+
+               userInfoList.add(userInfo);
+           });
+
+        }
+        apiResponse.setData(userInfoList);
+return apiResponse;
     }
 
   /*  public List<CoreUser> getAllUsers() {

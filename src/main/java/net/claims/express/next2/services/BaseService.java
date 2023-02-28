@@ -3,6 +3,7 @@ package net.claims.express.next2.services;
 import java.util.List;
 import java.util.Optional;
 
+import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.repositories.BaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,4 +35,5 @@ public abstract class BaseService<T> {
 	public <T> List<T> findAll() {
 		return (List<T>) baseRepository.findAll();
 	}
+
 }

@@ -468,6 +468,8 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
         return  apiResponse ;
     }
 
+
+
     public ApiResponse searchUser(String username, String name) {
         ApiResponse apiResponse = new ApiResponse();
         List <UserInfo> userInfoList= new ArrayList<>();
@@ -529,10 +531,11 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
 
                userInfoList.add(userInfo);
            });
+            apiResponse.setData(userInfoList);
 
         }
-        apiResponse.setData(userInfoList);
-return apiResponse;
+
+            return apiResponse;
     }
 
   /*  public List<CoreUser> getAllUsers() {

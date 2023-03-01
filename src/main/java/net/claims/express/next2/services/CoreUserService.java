@@ -6,6 +6,7 @@ import net.claims.express.next2.exceptions.BadRequestException;
 import net.claims.express.next2.exceptions.NotFoundException;
 import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.requests.AddUserRequest;
+import net.claims.express.next2.http.requests.EditUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.http.response.MyBaseResponse;
 import net.claims.express.next2.http.response.UserInfo;
@@ -446,6 +447,119 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
         return apiResponse;
     }
 
+
+
+
+
+
+    public ApiResponse editUser(EditUserRequest editUserRequest) {
+        Optional<CoreUser> coreUserOptional = db.coreUserRepository.findById(editUserRequest.getUserName());
+        ApiResponse apiResponse = new ApiResponse();
+        coreUserOptional.ifPresentOrElse((coreUser)
+                        -> {
+
+                    coreUser.setCompany_id(editUserRequest.getCompanyId());
+                    coreUser.setSysCreatedDate(LocalDateTime.now());
+                    coreUser.setSysUpdatedDate(LocalDateTime.now());
+
+                    CoreUser savedCoreUser = db.coreUserRepository.save(coreUser);
+                    Optional<CarsInsuranceEmployee> carsInsuranceEmployeeOptional = db.carsInsuranceEmployeeRepository.findByUsersCode(savedCoreUser.getId());
+                    carsInsuranceEmployeeOptional.ifPresent(carsInsuranceEmployee ->{
+                        //carsInsuranceEmployee.setUsersAbrev(editUserRequest.getFirstName().charAt(0) + "" + editUserRequest.getLastName().charAt(0));
+                        carsInsuranceEmployee.setUsersCode(editUserRequest.getUserName());
+                        carsInsuranceEmployee.setUsersBranch(new BigDecimal(editUserRequest.getBranchId()));
+                        carsInsuranceEmployee.setUsersInsurance(new BigDecimal(editUserRequest.getCompanyId()));
+                        carsInsuranceEmployee.setUsersBranchId(editUserRequest.getCompanyId() + "." + editUserRequest.getBranchId());
+                        carsInsuranceEmployee.setInsuranceEmployeeId(editUserRequest.getCompanyId() + "." + editUserRequest.getBranchId() + "." + editUserRequest.getUserName());
+
+                        carsInsuranceEmployee.setUserLimitLawyerFees(editUserRequest.getUserLimitLawyerFees());
+                        carsInsuranceEmployee.setUserLimitDoctorFees(editUserRequest.getUserLimitDoctorFees());
+                        carsInsuranceEmployee.setUserLimitHospitalFees(editUserRequest.getUserLimitHospitalFees());
+                        carsInsuranceEmployee.setUserLimitExpertFees(editUserRequest.getUserLimitExpertFees());
+                        carsInsuranceEmployee.setUserLimitSurveyFees(editUserRequest.getUserLimitSurveyFees());
+                        carsInsuranceEmployee.setUserLimitExceedPercentage(editUserRequest.getUserLimitExceedPercentage());
+                        carsInsuranceEmployee.setUsersLimit(editUserRequest.getPaymentLimit());
+
+                        carsInsuranceEmployee.setSysUpdatedDate(LocalDateTime.now());
+
+                        carsInsuranceEmployee.setUserLimitRecovery(editUserRequest.getRecoverLimit());
+                        db.carsInsuranceEmployeeRepository.save(carsInsuranceEmployee);
+
+                    });
+
+
+                 Optional<  CoreUserPreference> coreUserPreferenceOptional = db.coreUserPreferenceRepository.findByCoreUser(savedCoreUser.getId());
+
+                    coreUserPreferenceOptional.ifPresent(coreUserPreference->{
+                    coreUserPreference.setCoreUser(savedCoreUser);
+                    coreUserPreference.setUserEmail(editUserRequest.getEmail());
+                    coreUserPreference.setSysCreatedDate(LocalDateTime.now());
+                    coreUserPreference.setSysUpdatedDate(LocalDateTime.now());
+                    coreUserPreference.setLastLoginDate(LocalDateTime.now());
+
+                    Optional<CoreCompany> coreCompanyOptional = db.coreCompanyRepository.findById(String.valueOf(editUserRequest.getCompanyId()));
+                    coreCompanyOptional.ifPresentOrElse(
+                            (value)
+                                    -> {
+                                coreUserPreference.setCoreCompany(value);
+                                coreUserPreference.setCompanyName(value.getName());
+
+                                apiResponse.setStatusCode(StatusCode.OK.getCode());
+                                apiResponse.setMessage("User edited.");
+                                apiResponse.setTitle("success");
+                            },
+                            ()
+                                    -> {
+
+
+                                apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                                apiResponse.setMessage("Company not found.");
+                                apiResponse.setTitle("failed");
+                            }
+
+
+                    );
+
+                    coreUserPreference.setSkinId("coreSkinSmall");
+                    coreUserPreference.setDisplayName(editUserRequest.getDisplayName());
+                    db.coreUserPreferenceRepository.save(coreUserPreference);
+
+                    });
+
+                },
+                ()
+                        -> {
+
+
+                    apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                    apiResponse.setMessage("User not found.");
+                    apiResponse.setTitle("failed");
+                }
+
+        );
+
+
+        return apiResponse;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public ApiResponse updateUser(String userId, int active) {
         ApiResponse apiResponse = new ApiResponse();
         Optional<CoreUser> coreUserOptional = db.coreUserRepository.findById(userId);
@@ -473,6 +587,7 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
     public ApiResponse searchUser(String username, String name) {
         ApiResponse apiResponse = new ApiResponse();
         List <UserInfo> userInfoList= new ArrayList<>();
+        List<CoreUserPreference> coreUserPreferences = new ArrayList<>();
         if((username==null || username.isEmpty()) && (name==null||name.isEmpty())){
            List<CoreUser>coreUsers = db.userRepository.findAll();
            coreUsers.forEach((coreUser)->{
@@ -494,7 +609,7 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
                            userInfo.setUserLimitTaxiFees(carsInsuranceEmployee.getUserLimitTaxiFees());
                            userInfo.setUserLimitExpertFees(carsInsuranceEmployee.getUserLimitExpertFees());
                            userInfo.setUserLimitExceedPercentage(carsInsuranceEmployee.getUserLimitExceedPercentage());
-                           if(!carsInsuranceEmployee.getUsersBranchId().isEmpty()&&carsInsuranceEmployee.getUsersBranchId()!=null){
+                           if(carsInsuranceEmployee.getUsersBranchId().isEmpty()&&carsInsuranceEmployee.getUsersBranchId()!=null){
                            userInfo.setBranchId(carsInsuranceEmployee.getUsersBranchId().split(".")[1]);
                            }
 
@@ -535,9 +650,66 @@ List<MyBaseResponse> myBaseResponses = new ArrayList<>();
            });
             apiResponse.setData(userInfoList);
 
-        }
+        }else
+            if((username!=null || !username.isEmpty()) && (name==null||name.isEmpty())){
+              coreUserPreferences= db.coreUserPreferenceRepository.searchByUserName(username.toLowerCase());
 
-            return apiResponse;
+
+            }
+            else
+            if((username==null || username.isEmpty()) && (name!=null||!name.isEmpty())){
+                coreUserPreferences= db.coreUserPreferenceRepository.searchByDisplayName(name.toLowerCase());
+
+            }else {
+                coreUserPreferences= db.coreUserPreferenceRepository.searchByDisplayNameAndUserName(name.toLowerCase(),username.toLowerCase());
+
+            }
+            if(coreUserPreferences.size()>0){
+                coreUserPreferences.forEach(coreUserPreference -> {
+                    UserInfo userInfo = new UserInfo();
+                    userInfo.setEmail(coreUserPreference.getUserEmail());
+                    userInfo.setCompanyId(coreUserPreference.getCoreCompany().getId());
+                    userInfo.setCompanyDescription(coreUserPreference.getCoreCompany().getLegalName());
+                    userInfo.setDisplayName(coreUserPreference.getDisplayName());
+                    userInfo.setActive(coreUserPreference.getCoreUser().getActiveFlag());
+                    userInfo.setUserName(coreUserPreference.getCoreUser().getId());
+
+
+                    if(coreUserPreference.getCoreUser().getId()!=null){
+                        Optional <CarsInsuranceEmployee>carsInsuranceEmployeeOptional  = db.carsInsuranceEmployeeRepository.findByUsersCode(coreUserPreference.getCoreUser().getId());
+                        carsInsuranceEmployeeOptional.ifPresentOrElse(
+                                (carsInsuranceEmployee)->{
+                                    userInfo.setPaymentLimit(carsInsuranceEmployee.getUsersLimit());
+                                    userInfo.setRecoverLimit(carsInsuranceEmployee.getUserLimitRecovery());
+                                    userInfo.setUserLimitDoctorFees(carsInsuranceEmployee.getUserLimitDoctorFees());
+                                    userInfo.setUserLimitLawyerFees(carsInsuranceEmployee.getUserLimitLawyerFees());
+                                    userInfo.setUserLimitHospitalFees(carsInsuranceEmployee.getUserLimitHospitalFees());
+                                    userInfo.setUserLimitSurveyFees(carsInsuranceEmployee.getUserLimitSurveyFees());
+                                    userInfo.setUserLimitTaxiFees(carsInsuranceEmployee.getUserLimitTaxiFees());
+                                    userInfo.setUserLimitExpertFees(carsInsuranceEmployee.getUserLimitExpertFees());
+                                    userInfo.setUserLimitExceedPercentage(carsInsuranceEmployee.getUserLimitExceedPercentage());
+                                    if(carsInsuranceEmployee.getUsersBranchId().isEmpty()&&carsInsuranceEmployee.getUsersBranchId()!=null){
+                                        userInfo.setBranchId(carsInsuranceEmployee.getUsersBranchId().split(".")[1]);
+                                    }
+
+                                },
+                                ()->{
+
+                                }
+
+
+                        );
+
+                    }
+                    userInfoList.add(userInfo);
+                    apiResponse.setData(userInfoList);
+                });
+            }
+
+
+
+
+        return apiResponse;
     }
 
   /*  public List<CoreUser> getAllUsers() {

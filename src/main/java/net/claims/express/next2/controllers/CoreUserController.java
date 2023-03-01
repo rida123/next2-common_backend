@@ -5,6 +5,7 @@ import net.claims.express.next2.entities.CoreProfile;
 import net.claims.express.next2.entities.CoreUser;
 import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.requests.AddUserRequest;
+import net.claims.express.next2.http.requests.EditUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.services.CoreCompanyService;
 import net.claims.express.next2.services.CoreProfileService;
@@ -62,6 +63,12 @@ public class    CoreUserController {
     private ApiResponse addUser (@RequestBody AddUserRequest addUserRequest){
 
         return this.coreUserService.addUser(addUserRequest);
+    }
+
+    @PostMapping("/editUser")
+    private ApiResponse editUser (@RequestBody EditUserRequest editUserRequest){
+
+        return this.coreUserService.editUser(editUserRequest);
     }
 
 

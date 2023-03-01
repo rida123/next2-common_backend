@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 @EnableJpaRepositories
 @Repository
-public interface CoreUserRepository extends JpaRepository<CoreUser, String> {
+public interface CoreUserRepository extends BaseRepository<CoreUser, String> {
 
  /*   @Query("SELECT u from CoreUser u where u.coreUserId = :username")
     Optional<CoreUser> findCoreUserByUsername(String username);*/
@@ -18,4 +18,6 @@ public interface CoreUserRepository extends JpaRepository<CoreUser, String> {
 
     @Query(value = " SELECT CONFIG_VALUE FROM CORE_CONFIGURATION WHERE ID = ?1 ", nativeQuery = true)
     String findConfigByKey(String key);
+
+
 }

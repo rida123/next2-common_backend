@@ -47,7 +47,8 @@ public class CoreProfile extends BaseEntity implements Serializable {
     @Transient
     private String taskflowCode;
 
-    @Transient
+    @OneToMany
+    @JoinColumn(name="core_profile_id")
     private Set<CoreRole> profileRoles;
     
     @Transient

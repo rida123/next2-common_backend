@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,8 +19,8 @@ public class CustomTokenAuthentication implements Authentication {
     private final boolean authentication_status;
     private final String token;
     private List<GrantedAuthority> authorityList;
-    private String username;
-
+//    private String username;
+    private UserDetails userDetails;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
@@ -38,7 +39,8 @@ public class CustomTokenAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return username;
+        return userDetails;
+//        return username;
     }
 
     @Override
@@ -53,6 +55,7 @@ public class CustomTokenAuthentication implements Authentication {
 
     @Override
     public String getName() {
-         return username;
+         return userDetails.getUsername();
+//        return username;
     }
 }

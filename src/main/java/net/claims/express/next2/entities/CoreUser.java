@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,7 +46,7 @@ public class CoreUser extends BaseEntity implements Serializable {
             joinColumns = @JoinColumn(name = "core_user_id"),
             inverseJoinColumns = @JoinColumn(name = "core_company_profile_id")
     )
-    private List<CoreCompanyProfile> profiles;
+    private List<CoreCompanyProfile> profiles = new ArrayList<>();
 
     @Transient
     private int company_id;
@@ -54,8 +55,14 @@ public class CoreUser extends BaseEntity implements Serializable {
 //        this.id = UUID.randomUUID().toString();
 //    }
 
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    public void denyProfile(CoreCompanyProfile profile) {
+        if(this.profiles.contains(profile)) {
+            boolean done = this.profiles.remove(profile);
+            System.out.println("profile remove result: " + done);
+        }
+    }
+ public String toString() {
+        return getId().toString();
     }
 
 }

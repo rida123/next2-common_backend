@@ -5,12 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -42,12 +37,20 @@ public class CoreCompany extends BaseEntity implements Serializable {
     @Column(name = "ADDRESS_INFO", length = 200)
     private String addressInfo;
 
-    @OneToMany(mappedBy = "coreCompany", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    private List<CoreCompanyProfile> coreCompanyProfileList;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "core_company_profile",
+            joinColumns = @JoinColumn(name = "core_company_id"),
+            inverseJoinColumns = @JoinColumn(name = "core_profile_id")
+    )
+    private List<CoreProfile> companyProfiles;
+    //todo: old code
+/*    @OneToMany(mappedBy = "coreCompany", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private List<CoreCompanyProfile> coreCompanyProfileList;*/
     
 
     public CoreCompany() {
-    	this.id = UUID.randomUUID().toString();
+
     }
     
 	public String toString() {

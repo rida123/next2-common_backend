@@ -3,6 +3,7 @@ package net.claims.express.next2.security.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.claims.express.next2.entities.CoreUser;
+import net.claims.express.next2.exceptions.NotFoundException;
 import net.claims.express.next2.repositories.CoreUserProfileJpaRepository;
 import net.claims.express.next2.repositories.CoreUserRepository;
 import net.claims.express.next2.security.model.SecurityUser;
@@ -38,7 +39,7 @@ public class JpaUserDetailsService implements  UserDetailsService {
             }
 
             foundCoureUser = optionalCoreUser.get();
-            //get company of this user:
+            //get company of this user from one of his profiles:
             if(foundCoureUser.getProfiles().size() > 0) {
                 String profileId = foundCoureUser.getProfiles().get(0).getId();
 
@@ -54,7 +55,8 @@ public class JpaUserDetailsService implements  UserDetailsService {
         }
          catch (Exception exp) {
             System.out.println(exp.getMessage());
-            return  null;
+            throw  new NotFoundException("AAAAAA     " + exp.getMessage());
+//            return  null;
         }
 // TODO: 12/7/2022 if user is not found in the database => return an exception
       /*  return usr.map(SecurityUser::new)

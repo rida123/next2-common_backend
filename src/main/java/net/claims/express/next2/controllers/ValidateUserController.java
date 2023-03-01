@@ -4,16 +4,15 @@ import net.claims.express.next2.entities.CoreCompanyProfile;
 import net.claims.express.next2.entities.CoreProfile;
 import net.claims.express.next2.entities.CoreRole;
 import net.claims.express.next2.entities.CoreUser;
+import net.claims.express.next2.http.StatusCode;
+import net.claims.express.next2.http.response.ApiResponse;
 import net.claims.express.next2.security.model.SecurityUser;
 import net.claims.express.next2.security.services.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -29,12 +28,13 @@ public class ValidateUserController {
 
 
 
+
     //start from melhem
 
     //end from melhem
 
-    @PostMapping("validate")
-    public List<CoreProfile> userIsValid() {
+    @RequestMapping("validate")
+    public ApiResponse userIsValid(@RequestParam String language) {
         System.out.println("@Validate controller....");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("coming user::"   + auth.getPrincipal());
@@ -55,8 +55,6 @@ public class ValidateUserController {
 
         //preparing EMPTY array list to hold profiles that I can use within my company
         List<CoreProfile> myProfiles = new ArrayList<>();
-
-
 
         for(CoreCompanyProfile companyProfile: myCompanyProfiles) {
             System.out.println("@PROFILE => " + companyProfile.getId());
@@ -90,9 +88,13 @@ public class ValidateUserController {
         Map<String, String> results = new HashMap<>();
         results.put("results", token);
 
-        return myProfiles;
+//        return myProfiles;
 //        return results;
-//        return "{\"result\": \"ok\", \"name\": \"ok\"}";
+   //     return "{\"result\": \"ok\", \"name\": \"ok\"}";
+        Map<String, Object> afterLogin_data = new HashMap<>();
+        afterLogin_data.put("lang", "fr");
+        afterLogin_data.put("profiles", myProfiles);
+       return new  ApiResponse(StatusCode.OK.getCode(), "success", "login data", afterLogin_data);
     }
 
     @RequestMapping("ok")

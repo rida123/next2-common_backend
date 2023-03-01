@@ -1,0 +1,184 @@
+[33mcommit a27323c6c0d5415f570be2b218bb40335d795622[m[33m ([m[1;36mHEAD -> [m[1;32mmilestone_profiles_plus_roles_per_user[m[33m, [m[1;31morigin/milestone_profiles_plus_roles_per_user[m[33m)[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 10 17:37:44 2023 +0200
+
+    fixing bug: if role has property granted = true,
+    we must add check if already exist (it already exist in table: core_user_profile_perm)
+
+[33mcommit 8aca1a8b560427f272860357b66531d39c3a0dde[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 10 15:16:22 2023 +0200
+
+     ahmad bado yfel 3al bet
+
+[33mcommit 0831db3526ae22dbf09611f6766f39cb85ec9516[m
+Merge: 2ebd030 d06db8f
+Author: AhmadAw212 <awadaahmad606@gmail.com>
+Date:   Fri Feb 10 13:59:43 2023 +0200
+
+    updating roles
+
+[33mcommit 2ebd0300225f53dd21a96f820988819e40ae7ccc[m
+Author: AhmadAw212 <awadaahmad606@gmail.com>
+Date:   Fri Feb 10 13:58:48 2023 +0200
+
+    updating roles
+
+[33mcommit d06db8ffa8fa877fd7c38566271c068cd92cce7a[m
+Merge: 605204e d6e5dd2
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 10 11:50:22 2023 +0200
+
+    Merge branch 'milestone_profiles_plus_roles_per_user' of https://github.com/rida123/next2-common_backend into milestone_profiles_plus_roles_per_user
+
+[33mcommit 605204e4a4b36f9f085fea90ad70a63e7a223627[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 10 11:44:40 2023 +0200
+
+    CoreUserService for CoreUser management
+
+[33mcommit d6e5dd2bd978d86cdccc8e564093b32e5831e80b[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Wed Feb 8 17:07:57 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit 07de7c55cb7bc49e27439ae654e7c0aa0e2870b5[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Wed Feb 8 17:06:12 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit c84f7408e8db0e6f6d6ae7cb08874cdd1056011c[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Wed Feb 8 17:05:13 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit 724a87974cdda47e4af933414269c80b271fea5d[m
+Merge: 2771461 7457b08
+Author: AhmadAw212 <awadaahmad606@gmail.com>
+Date:   Wed Feb 8 13:23:00 2023 +0200
+
+    Merge branch 'milestone_profiles_plus_roles_per_user' of https://github.com/rida123/next2-common_backend into profiles_plus_roles
+
+[33mcommit 27714615a20b8dbc8594ef12825d8c6aebe65d23[m
+Author: AhmadAw212 <awadaahmad606@gmail.com>
+Date:   Wed Feb 8 13:22:51 2023 +0200
+
+    commit
+
+[33mcommit 7457b0840ae5bbbe3c652539f94d49fa32753367[m
+Merge: 174314d 4c4b401
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Wed Feb 8 13:19:34 2023 +0200
+
+    Merge branch 'milestone_profiles_plus_roles_per_user' of https://github.com/rida123/next2-common_backend into milestone_profiles_plus_roles_per_user
+
+[33mcommit 174314dd1415d2ba9d5e2022e56737b68b5deebd[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Wed Feb 8 13:15:31 2023 +0200
+
+    task1: add/remove profile, task2: update roles(grant/revoke) roles
+
+[33mcommit 7af6a5846d4df8cffa788d887bfd73757092a4f0[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Mon Feb 6 15:01:15 2023 +0200
+
+    in progress update_roles task
+
+[33mcommit 4c4b401a8274f2f87f1c83781acb5539e26ab170[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Mon Feb 6 13:47:27 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit 286e84a3bc2478499ece910cc5dd5e8871289273[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Mon Feb 6 09:54:41 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit 7c6ddff6eb9157ba0f0ef3846c9f6d32edffbcac[m
+Merge: 12a318d 16a5454
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 3 13:07:52 2023 +0200
+
+    Merge remote-tracking branch 'origin/milestone_profiles_plus_roles_per_user' into milestone_profiles_plus_roles_per_user
+
+[33mcommit 16a54544267d339388e89123c85dd0435a74bbbd[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Fri Feb 3 13:05:08 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit 12a318dba8546b6467ab0d7c3e65e77ea36ec8ed[m
+Merge: e7b7190 e19c656
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 3 12:40:46 2023 +0200
+
+    Merge branch 'milestone_profiles_plus_roles_per_user' of https://github.com/rida123/next2-common_backend into milestone_profiles_plus_roles_per_user
+
+[33mcommit e7b71903e91a6cf572ef8edf744c92c70319c039[m
+Merge: 69b8757 ac97082
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 3 12:38:25 2023 +0200
+
+    Merge remote-tracking branch 'origin/milestone_profiles_plus_roles_per_user' into milestone_profiles_plus_roles_per_user
+    
+    # Conflicts:
+    #       src/main/java/net/claims/express/next2/controllers/CoreUserController.java
+
+[33mcommit e19c65698f0782b2a17ea55e0b8a54fd50df3654[m
+Author: Claims <ysfharb@hotmail.com>
+Date:   Fri Feb 3 12:36:15 2023 +0200
+
+    GetnotificationByPhone
+
+[33mcommit 69b8757b6a7062daac65f65294b8934518c7fbb5[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Fri Feb 3 12:36:12 2023 +0200
+
+    add profile & grant roles to user
+
+[33mcommit ac9708223982849da202e4eeeed447e19a78a7a9[m
+Author: AhmadAw212 <awadaahmad606@gmail.com>
+Date:   Fri Feb 3 12:08:42 2023 +0200
+
+    Filter update
+
+[33mcommit 0419a2b14aa83b976cfe1914cf3fc85f67032225[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Thu Feb 2 13:13:29 2023 +0200
+
+    grant user selected profile plus enhance response entity reply as ApiResponse
+
+[33mcommit 98b7f8da657e0148691548d1af4d6a46d9318843[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Thu Jan 26 10:34:35 2023 +0200
+
+    all profiles end point done within ProfilesController
+
+[33mcommit ad2c649578e866057962dc49ea8c432e2e336dd5[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Thu Jan 26 10:09:52 2023 +0200
+
+    testing push on remote branch
+
+[33mcommit 3bd2b85c5dad5323c9d1fe72e89feea0875f5dde[m[33m ([m[1;32mmaster[m[33m)[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Mon Jan 23 10:31:52 2023 +0200
+
+    task: get profiles plus roles
+
+[33mcommit 4a28f1200b8242cecaf253971adac6c62017dd1d[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Wed Jan 11 10:23:08 2023 +0200
+
+    backend returning for a login user his  profiles and within each profile list of its corresponding authorities
+
+[33mcommit b2ff4a7d808463b2ece31bc048ca93af42d58716[m
+Author: reda safwan <ridasaf1@gmail.com>
+Date:   Thu Dec 29 11:38:32 2022 +0200
+
+    Working copy of the project with login functionality that result in return of his profiles and his corresponding roles for each profile

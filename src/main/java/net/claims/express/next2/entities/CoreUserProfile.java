@@ -19,6 +19,9 @@ public class CoreUserProfile extends  BaseEntity {
     @Column(name = "core_company_profile_id")
     private String coreCompanyProfileId;
 
+    @Column(name="FULL_FLAG")
+    private Integer fullFlag;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "core_user_profile_perm",
@@ -28,7 +31,7 @@ public class CoreUserProfile extends  BaseEntity {
     private Set<CoreRole> userRoles;
 
     public CoreUserProfile() {
-//        this.id = UUID.randomUUID().toString();
+//        this.id = UUID.randomUUID().toString(); (id is generated programmatically)
     }
 
 }

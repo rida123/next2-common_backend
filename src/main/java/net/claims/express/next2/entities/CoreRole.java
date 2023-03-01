@@ -2,6 +2,7 @@ package net.claims.express.next2.entities;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -29,6 +30,9 @@ public class CoreRole extends BaseEntity implements Serializable {
     @Transient
     private Boolean selected;
 
+    @Transient
+    private Boolean granted = Boolean.FALSE;
+
   /*  @ManyToOne
     @JoinColumn(name = "CORE_PROFILE_ID", nullable = true)*/
    @Column(name="CORE_PROFILE_ID")
@@ -45,10 +49,24 @@ public class CoreRole extends BaseEntity implements Serializable {
 
     @Column(name = "DESCRIPTION", nullable = false, length = 4000)
     private String description;
-    
-   
+
+
 
     public CoreRole() {
          this.id=UUID.randomUUID().toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        CoreRole role = (CoreRole) o;
+        return Objects.equals(id, role.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id);
     }
 }

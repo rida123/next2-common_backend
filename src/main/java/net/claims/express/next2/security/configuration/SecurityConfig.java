@@ -35,17 +35,20 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         var usernamePwdFilter = new UsernamePasswordFilter();
 
+       /*  rs: 15-2-23 basicAuth(old way it was custom filter having bugs)
         UsernamePasswordFilter up_authentication_filter = new UsernamePasswordFilter();
-        up_authentication_filter.setAuthenticationManager(this.authManager);
+        up_authentication_filter.setAuthenticationManager(this.authManager);*/
+
         //Requirements for BASIC AUTHENTICATION part
         http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .httpBasic().and() //rs: 15-2-23(added)
+                .authenticationManager(authManager)
 //                .userDetailsService(jpaUserDetailsService) todo check later
                 .authorizeRequests().
                 antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/api/basicAuth/**").permitAll()
-                  .and().httpBasic().and().addFilterAfter(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
-//                .and().httpBasic().and().addFilterBefore(new UsernamePasswordFilter(this.authManager), BasicAuthenticationFilter.class);
+                .antMatchers("/api/basicAuth/**").permitAll();
+//     rs: 15-2-23:::.and().httpBasic().and().addFilterAfter(up_authentication_filter, UsernamePasswordAuthenticationFilter.class);
         //cors configuration didn't work, solution add configuration file CORSConfig:
         /*http.cors(c -> {
             CorsConfigurationSource cs = r -> {

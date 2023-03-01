@@ -18,4 +18,6 @@ public interface CoreUserRepository extends BaseRepository<CoreUser, String> {
 
     @Query(value = " SELECT CONFIG_VALUE FROM CORE_CONFIGURATION WHERE ID = ?1 ", nativeQuery = true)
     String findConfigByKey(String key);
+
+
 }

@@ -68,6 +68,10 @@ public class CarsInsuranceEmployee extends BaseEntity implements Serializable {
     @Column(name = "USER_LIMIT_EXCEED_PERCENTAGE")
     private BigDecimal userLimitExceedPercentage;
 
+    @Column(name = "USER_LIMIT_RECOVERY")
+    private BigDecimal userLimitRecovery;
+
+
     @Column(name = "USER_LIMIT_LAWYER_FEES")
     private BigDecimal userLimitLawyerFees;
 

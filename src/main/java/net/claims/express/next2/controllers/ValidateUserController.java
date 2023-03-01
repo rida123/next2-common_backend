@@ -33,8 +33,8 @@ public class ValidateUserController {
 
     //end from melhem
 
-    @RequestMapping("validate")
-    public ApiResponse userIsValid(@RequestParam String language) {
+    @RequestMapping(value = "validate")
+    public ApiResponse userIsValid() {
         System.out.println("@Validate controller....");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("coming user::"   + auth.getPrincipal());
@@ -92,8 +92,8 @@ public class ValidateUserController {
 //        return results;
    //     return "{\"result\": \"ok\", \"name\": \"ok\"}";
         Map<String, Object> afterLogin_data = new HashMap<>();
-        afterLogin_data.put("lang", "fr");
-        afterLogin_data.put("profiles", myProfiles);
+        afterLogin_data.put("token", token);
+//        afterLogin_data.put("profiles", myProfiles);
        return new  ApiResponse(StatusCode.OK.getCode(), "success", "login data", afterLogin_data);
     }
 

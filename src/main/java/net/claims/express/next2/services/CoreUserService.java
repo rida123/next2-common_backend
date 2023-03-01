@@ -7,6 +7,8 @@ import net.claims.express.next2.exceptions.NotFoundException;
 import net.claims.express.next2.http.StatusCode;
 import net.claims.express.next2.http.requests.AddUserRequest;
 import net.claims.express.next2.http.response.ApiResponse;
+import net.claims.express.next2.http.response.MyBaseResponse;
+import net.claims.express.next2.http.response.UserInfo;
 import net.claims.express.next2.repositories.*;
 import net.claims.express.next2.security.services.PwdEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class CoreUserService extends BaseService<CoreUser> {
     CarsInsuranceEmployeeService carsInsuranceEmployeeService;
     @Autowired
     private PwdEncoder passwordEncoder;
+
+    @Autowired
+    private CoreCompanyProfileRepository coreCompanyProfileRepository;
 
     @Autowired
     private CoreCompanyProfileService companyProfileService;
@@ -98,17 +103,44 @@ public class CoreUserService extends BaseService<CoreUser> {
     }
 
     /**
-     * we get company id from user
-     *
+     * this function will return all company profiles that are not granted for a given user yet.
+     * this function is used in the front-end where we want to add a profile for a user, so we show list
+     * of company profiles missing to that user
      * @param userId
      * @return
      */
-    public ApiResponse getUserCompanyProfiles(String userId) {
+    public ApiResponse getMissingCompanyProfilesByUser(String userId) {
         CarsInsuranceEmployee employeeInfo = this.getEmployeeInfo(userId);
         String companyId = employeeInfo.getInsuranceEmployeeId().substring(0, employeeInfo.getInsuranceEmployeeId().indexOf("."));
 
+        List<CoreCompanyProfile> unGrantedCompanyProfiles = new ArrayList<>();
+        List<CoreProfile> unGrantedProfiles = new ArrayList<>();
+List<MyBaseResponse> myBaseResponses = new ArrayList<>();
         List<CoreProfile> companyProfiles = this.companyProfileService.getProfilesByCompany(companyId);
-        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles returned successfully.", companyProfiles);
+//        List<CoreUserProfile> registeredProfiles = this.coreUserProfileService.getUserProfiles(userId);
+        List<String> registeredProfiles =new ArrayList<>();
+                this.coreUserProfileService.getUserProfiles(userId).forEach( p -> {
+                    String companyProfile = p.getCoreCompanyProfileId();
+                    registeredProfiles.add(companyProfile.substring(companyProfile.indexOf(".") + 1));
+        });
+        unGrantedCompanyProfiles = this.coreCompanyProfileRepository.findByCoreCompanyIdAndNotWithinUserProfiles(companyId, registeredProfiles);
+       unGrantedCompanyProfiles.forEach( p -> {
+           String company_profile_id = p.getId();
+           unGrantedProfiles.add(this.profileService.findById(company_profile_id.substring(company_profile_id.indexOf(".") + 1)).get());
+        });
+
+        /*for (CoreProfile p : companyProfiles) {
+
+        }*/
+        unGrantedProfiles.forEach(
+                coreProfile->{
+                    MyBaseResponse myBaseResponse = new MyBaseResponse();
+                    myBaseResponse.setCode(coreProfile.getCode());
+                    myBaseResponse.setDescription(coreProfile.getDescription());
+                    myBaseResponses.add(myBaseResponse);
+                }
+        );
+        return new ApiResponse(StatusCode.OK.getCode(), "success", "Company profiles not granted for user " +userId  , myBaseResponses);
     }
 
     @Transactional
@@ -364,9 +396,7 @@ public class CoreUserService extends BaseService<CoreUser> {
                     carsInsuranceEmployee.setSysCreatedBy("anonymous");
                     carsInsuranceEmployee.setSysUpdatedDate(LocalDateTime.now());
 
-
-
-// TODO: 2/18/2023  recovery limit
+                    carsInsuranceEmployee.setUserLimitRecovery(addUserRequest.getRecoverLimit());
                     db.carsInsuranceEmployeeRepository.save(carsInsuranceEmployee);
 
                     CoreUserPreference coreUserPreference = new CoreUserPreference();
@@ -414,6 +444,95 @@ public class CoreUserService extends BaseService<CoreUser> {
 
 
         return apiResponse;
+    }
+
+    public ApiResponse updateUser(String userId, int active) {
+        ApiResponse apiResponse = new ApiResponse();
+        Optional<CoreUser> coreUserOptional = db.coreUserRepository.findById(userId);
+        coreUserOptional.ifPresentOrElse(
+                (coreUser)->{
+                    coreUser.setSysUpdatedDate(LocalDateTime.now());
+                    coreUser.setActiveFlag(active);
+                    db.coreUserRepository.save(coreUser);
+                    apiResponse.setStatusCode(StatusCode.OK.getCode());
+                    apiResponse.setTitle("success");
+                    apiResponse.setTitle(" active status was changed");
+                },
+                ()->{
+                  apiResponse.setStatusCode(StatusCode.FAILED.getCode());
+                  apiResponse.setTitle("User not found");
+                    apiResponse.setTitle("Invalid User ");
+
+                }
+        );
+        return  apiResponse ;
+    }
+
+    public ApiResponse searchUser(String username, String name) {
+        ApiResponse apiResponse = new ApiResponse();
+        List <UserInfo> userInfoList= new ArrayList<>();
+        if((username==null || username.isEmpty()) && (name==null||name.isEmpty())){
+           List<CoreUser>coreUsers = db.userRepository.findAll();
+           coreUsers.forEach((coreUser)->{
+               UserInfo userInfo = new UserInfo();
+
+               userInfo.setActive(coreUser.getActiveFlag());
+               userInfo.setUserName(coreUser.getId());
+            //   userInfo.setBranchId(coreUser.getCompany_id());
+               if(coreUser.getId()!=null){
+               Optional <CarsInsuranceEmployee>carsInsuranceEmployeeOptional  = db.carsInsuranceEmployeeRepository.findByUsersCode(coreUser.getId());
+               carsInsuranceEmployeeOptional.ifPresentOrElse(
+                       (carsInsuranceEmployee)->{
+                           userInfo.setPaymentLimit(carsInsuranceEmployee.getUsersLimit());
+                           userInfo.setRecoverLimit(carsInsuranceEmployee.getUserLimitRecovery());
+                           userInfo.setUserLimitDoctorFees(carsInsuranceEmployee.getUserLimitDoctorFees());
+                           userInfo.setUserLimitLawyerFees(carsInsuranceEmployee.getUserLimitLawyerFees());
+                           userInfo.setUserLimitHospitalFees(carsInsuranceEmployee.getUserLimitHospitalFees());
+                           userInfo.setUserLimitSurveyFees(carsInsuranceEmployee.getUserLimitSurveyFees());
+                           userInfo.setUserLimitTaxiFees(carsInsuranceEmployee.getUserLimitTaxiFees());
+                           userInfo.setUserLimitExpertFees(carsInsuranceEmployee.getUserLimitExpertFees());
+                           userInfo.setUserLimitExceedPercentage(carsInsuranceEmployee.getUserLimitExceedPercentage());
+                           userInfo.setBranchId(carsInsuranceEmployee.getUsersBranchId());
+
+                       },
+                       ()->{
+
+                       }
+
+
+               );
+
+               }
+
+               Optional <CoreUserPreference> coreUserPreferenceOptional  = db.coreUserPreferenceRepository.findByCoreUser(coreUser.getId());
+
+               coreUserPreferenceOptional.ifPresentOrElse(
+                       (coreUserPreference)->{
+                userInfo.setEmail(coreUserPreference.getUserEmail());
+               userInfo.setCompanyId(coreUserPreference.getCoreCompany().getId());
+               userInfo.setCompanyDescription(coreUserPreference.getCoreCompany().getLegalName());
+               userInfo.setDisplayName(coreUserPreference.getDisplayName());
+
+
+
+
+                       },
+                       ()->{
+
+                       }
+
+
+               );
+
+
+
+
+               userInfoList.add(userInfo);
+           });
+
+        }
+        apiResponse.setData(userInfoList);
+return apiResponse;
     }
 
   /*  public List<CoreUser> getAllUsers() {
